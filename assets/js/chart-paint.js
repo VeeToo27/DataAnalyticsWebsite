@@ -45,12 +45,16 @@ class ChartPaintStudio {
       '#1e60d0', '#00a8e8', '#10b981', '#f59e0b', '#8b5cf6', '#f97316', '#0f172a'
     ];
 
+    this.isMobile = (window.innerWidth < 768) || ('ontouchstart' in window);
+    this.isVisible = true;
+
     this.init();
   }
 
   init() {
     this.resizeCanvas();
     window.addEventListener('resize', () => {
+      this.isMobile = (window.innerWidth < 768) || ('ontouchstart' in window);
       this.resizeCanvas();
       this.redrawAll();
     }, { passive: true });
@@ -59,12 +63,23 @@ class ChartPaintStudio {
     this.bindToolbarEvents();
     this.bindPieEditorEvents();
     this.loadSampleCoordinatedChart();
+    this.initVisibilityObserver();
     this.startRenderLoop();
+  }
+
+  initVisibilityObserver() {
+    if (!('IntersectionObserver' in window)) return;
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        this.isVisible = entry.isIntersecting;
+      });
+    }, { rootMargin: '80px 0px 80px 0px' });
+    observer.observe(this.canvas);
   }
 
   resizeCanvas() {
     const container = this.canvas.parentElement;
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const dpr = this.isMobile ? 1.0 : Math.min(window.devicePixelRatio || 1, 2);
     this.width = container.clientWidth || 950;
     this.height = Math.max(540, container.clientHeight || 540);
 
@@ -536,15 +551,15 @@ class ChartPaintStudio {
     pie.slices.forEach((slice, idx) => {
       const pct = Math.round(((parseFloat(slice.value) || 0) / totalVal) * 100);
       html += `
-        <div class="flex items-center gap-2 p-2 rounded-lg bg-slate-50 border border-slate-200" data-slice-idx="${idx}">
-          <input type="color" class="w-7 h-7 rounded border border-slate-300 cursor-pointer slice-color-input" value="${slice.color}">
-          <input type="text" class="flex-1 bg-white border border-slate-300 rounded px-2 py-1 text-xs font-semibold text-slate-800 slice-label-input" value="${slice.label}" placeholder="Label">
-          <div class="flex items-center gap-1">
-            <input type="number" class="w-16 bg-white border border-slate-300 rounded px-2 py-1 text-xs font-mono font-bold text-slate-800 slice-val-input" value="${slice.value}" min="1">
-            <span class="text-xs font-mono font-bold text-brand-blue w-9 text-right">${pct}%</span>
+        <div class="flex items-center gap-2 p-2.5 rounded-xl bg-slate-800/80 border border-slate-700/80 shadow-sm" data-slice-idx="${idx}">
+          <input type="color" class="w-7 h-7 rounded border border-slate-600 bg-transparent cursor-pointer slice-color-input" value="${slice.color}">
+          <input type="text" class="flex-1 bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1 text-xs font-semibold text-white outline-none focus:border-cyan-400 slice-label-input" value="${slice.label}" placeholder="Label">
+          <div class="flex items-center gap-1.5">
+            <input type="number" class="w-16 bg-slate-900 border border-slate-700 rounded-lg px-2 py-1 text-xs font-mono font-bold text-white outline-none focus:border-cyan-400 slice-val-input" value="${slice.value}" min="1">
+            <span class="text-xs font-mono font-bold text-cyan-400 w-10 text-right">${pct}%</span>
           </div>
           ${pie.slices.length > 1 ? `
-            <button class="text-slate-400 hover:text-red-500 p-1 delete-slice-btn" title="Remove slice" data-slice-idx="${idx}">
+            <button class="text-slate-400 hover:text-red-400 p-1 delete-slice-btn" title="Remove slice" data-slice-idx="${idx}">
               <i data-lucide="x" class="w-3.5 h-3.5"></i>
             </button>
           ` : ''}
@@ -866,6 +881,10 @@ class ChartPaintStudio {
 
   startRenderLoop() {
     const loop = (now) => {
+      if (this.isMobile && !this.isVisible) {
+        requestAnimationFrame(loop);
+        return;
+      }
       this.updateMorphingObjects(now);
       this.updateParticles();
       this.redrawAll(now);
@@ -986,10 +1005,11 @@ class ChartPaintStudio {
   }
 
   drawGridPaper(w, h) {
-    this.ctx.fillStyle = '#fafbfc';
+    // Sleek Dark Canvas Background (#090e17)
+    this.ctx.fillStyle = '#090e17';
     this.ctx.fillRect(0, 0, w, h);
 
-    this.ctx.strokeStyle = 'rgba(148, 163, 184, 0.12)';
+    this.ctx.strokeStyle = 'rgba(255, 255, 255, 0.04)';
     this.ctx.lineWidth = 1;
     const step = 26;
 
@@ -1010,7 +1030,7 @@ class ChartPaintStudio {
 
   drawInteractiveCrosshairGuide() {
     this.ctx.save();
-    this.ctx.strokeStyle = 'rgba(0, 168, 232, 0.25)';
+    this.ctx.strokeStyle = 'rgba(0, 240, 255, 0.35)';
     this.ctx.lineWidth = 1;
     this.ctx.setLineDash([4, 4]);
 
@@ -1054,7 +1074,7 @@ class ChartPaintStudio {
       const axW = obj.w;
       const axH = obj.h;
 
-      this.ctx.strokeStyle = '#334155';
+      this.ctx.strokeStyle = '#64748b';
       this.ctx.lineWidth = 2.5;
       this.ctx.beginPath();
       this.ctx.moveTo(ox, oy);
@@ -1064,7 +1084,7 @@ class ChartPaintStudio {
       this.ctx.stroke();
 
       // Arrowheads
-      this.ctx.fillStyle = '#334155';
+      this.ctx.fillStyle = '#64748b';
       this.ctx.beginPath();
       this.ctx.moveTo(ox, oy - axH - 8);
       this.ctx.lineTo(ox - 5, oy - axH);
@@ -1080,14 +1100,14 @@ class ChartPaintStudio {
       // Y-Axis Ticks
       const yTicks = obj.yTicks || 5;
       this.ctx.font = '10px Outfit, monospace';
-      this.ctx.fillStyle = '#64748b';
+      this.ctx.fillStyle = '#94a3b8';
       this.ctx.textAlign = 'right';
 
       for (let i = 0; i <= yTicks; i++) {
         const ty = oy - (axH / yTicks) * i;
         const val = Math.round((obj.yMax / yTicks) * i);
 
-        this.ctx.strokeStyle = '#94a3b8';
+        this.ctx.strokeStyle = '#64748b';
         this.ctx.lineWidth = 1.5;
         this.ctx.beginPath();
         this.ctx.moveTo(ox - 6, ty);
@@ -1095,7 +1115,7 @@ class ChartPaintStudio {
         this.ctx.stroke();
 
         if (i > 0) {
-          this.ctx.strokeStyle = 'rgba(226, 232, 240, 0.8)';
+          this.ctx.strokeStyle = 'rgba(255, 255, 255, 0.06)';
           this.ctx.lineWidth = 1;
           this.ctx.setLineDash([3, 3]);
           this.ctx.beginPath();
@@ -1115,31 +1135,35 @@ class ChartPaintStudio {
 
       xLabels.forEach((label, idx) => {
         const tx = ox + stepX * (idx + 1);
-        this.ctx.strokeStyle = '#94a3b8';
+        this.ctx.strokeStyle = '#64748b';
         this.ctx.lineWidth = 1.5;
         this.ctx.beginPath();
         this.ctx.moveTo(tx, oy);
         this.ctx.lineTo(tx, oy + 6);
         this.ctx.stroke();
 
-        this.ctx.fillStyle = '#475569';
+        this.ctx.fillStyle = '#94a3b8';
         this.ctx.fillText(label, tx, oy + 20);
       });
 
       // Axis Titles
       this.ctx.font = 'bold 11px Outfit, sans-serif';
-      this.ctx.fillStyle = '#1e293b';
+      this.ctx.fillStyle = '#38bdf8';
       this.ctx.textAlign = 'center';
-      this.ctx.fillText(obj.xTitle || 'X Axis', ox + axW * 0.5, oy + 38);
+      this.ctx.fillText(obj.xTitle || 'X Axis', ox + axW * 0.5, oy + 42);
 
       this.ctx.save();
-      this.ctx.translate(ox - 36, oy - axH * 0.5);
-      this.ctx.rotate(-Math.PI * 0.5);
+      this.ctx.translate(ox - 45, oy - axH * 0.5);
+      this.ctx.rotate(-Math.PI / 2);
+      this.ctx.fillStyle = '#38bdf8';
       this.ctx.fillText(obj.yTitle || 'Y Axis', 0, 0);
       this.ctx.restore();
+      this.ctx.restore();
+      return;
+    }
 
     // 2. GLOSSY ANIMATED BAR GRAPH
-    } else if (obj.type === 'bar') {
+    else if (obj.type === 'bar') {
       const grad = this.ctx.createLinearGradient(0, obj.y, 0, obj.y + obj.h);
       grad.addColorStop(0, obj.color);
       grad.addColorStop(1, '#ffffff');
@@ -1166,7 +1190,7 @@ class ChartPaintStudio {
       this.ctx.fillRect(obj.x + 2, sweepY, obj.w - 4, 3);
 
       // Value Badge
-      this.ctx.fillStyle = '#0f172a';
+      this.ctx.fillStyle = '#ffffff';
       this.ctx.font = 'bold 12px Outfit, sans-serif';
       this.ctx.textAlign = 'center';
       this.ctx.fillText(obj.value, obj.x + obj.w * 0.5, obj.y - 10);
@@ -1176,8 +1200,8 @@ class ChartPaintStudio {
       const pts = obj.points;
       if (pts.length >= 2) {
         const areaGrad = this.ctx.createLinearGradient(0, pts[0].y, 0, 480);
-        areaGrad.addColorStop(0, 'rgba(30, 96, 208, 0.18)');
-        areaGrad.addColorStop(1, 'rgba(30, 96, 208, 0.0)');
+        areaGrad.addColorStop(0, 'rgba(0, 240, 255, 0.22)');
+        areaGrad.addColorStop(1, 'rgba(0, 240, 255, 0.0)');
 
         this.ctx.fillStyle = areaGrad;
         this.ctx.beginPath();
@@ -1220,9 +1244,9 @@ class ChartPaintStudio {
           const pulseX = p1.x + (p2.x - p1.x) * segT;
           const pulseY = p1.y + (p2.y - p1.y) * segT;
 
-          this.ctx.fillStyle = '#f59e0b';
-          this.ctx.shadowColor = '#f59e0b';
-          this.ctx.shadowBlur = 10;
+          this.ctx.fillStyle = '#fbbf24';
+          this.ctx.shadowColor = '#fbbf24';
+          this.ctx.shadowBlur = 12;
           this.ctx.beginPath();
           this.ctx.arc(pulseX, pulseY, 5, 0, Math.PI * 2);
           this.ctx.fill();
@@ -1240,14 +1264,14 @@ class ChartPaintStudio {
           this.ctx.fill();
           this.ctx.stroke();
 
-          this.ctx.fillStyle = '#0f172a';
-          this.ctx.font = 'bold 10px Outfit, sans-serif';
+          this.ctx.fillStyle = '#ffffff';
+          this.ctx.font = 'bold 11px Outfit, sans-serif';
           this.ctx.textAlign = 'center';
           this.ctx.fillText(pt.val, pt.x, pt.y - 10);
         });
       }
 
-    // 4. RADIAL DONUT CHART WITH EDITABLE FIGURES & PERCENTAGE LABELS
+    // 4. RADIAL DONUT CHART WITH EDITABLE FIGURES & PERCENTAGE LABELS (HIGH-VISIBILITY)
     } else if (obj.type === 'pie') {
       let currentAngle = -Math.PI * 0.5;
       const total = obj.slices.reduce((acc, s) => acc + (parseFloat(s.value) || 0), 0) || 100;
@@ -1267,32 +1291,52 @@ class ChartPaintStudio {
         this.ctx.closePath();
         this.ctx.fill();
 
-        this.ctx.strokeStyle = '#ffffff';
+        this.ctx.strokeStyle = '#090e17';
         this.ctx.lineWidth = 3;
         this.ctx.stroke();
 
-        // Slice Label & Percentage Figure
+        // Slice Label & Percentage Figure (High Visibility Pill & Text)
         const pct = Math.round((val / total) * 100);
-        const labelRadius = obj.radius + 24;
+        const labelRadius = obj.radius + 26;
         const lx = obj.cx + Math.cos(midAngle) * labelRadius;
         const ly = obj.cy + Math.sin(midAngle) * labelRadius;
 
-        this.ctx.fillStyle = '#1e293b';
+        this.ctx.save();
+        this.ctx.fillStyle = 'rgba(11, 20, 38, 0.9)';
+        this.ctx.strokeStyle = slice.color;
+        this.ctx.lineWidth = 1.5;
+        this.ctx.beginPath();
+        this.ctx.roundRect(lx - 24, ly - 11, 48, 22, 6);
+        this.ctx.fill();
+        this.ctx.stroke();
+
+        this.ctx.fillStyle = '#ffffff';
         this.ctx.font = 'bold 11px Outfit, sans-serif';
         this.ctx.textAlign = 'center';
+        this.ctx.textBaseline = 'middle';
         this.ctx.fillText(`${pct}%`, lx, ly);
+        this.ctx.restore();
 
         currentAngle = endAngle;
       });
 
       // Center Donut Hole & Total
-      this.ctx.fillStyle = '#0f172a';
-      this.ctx.font = 'bold 16px Outfit, sans-serif';
+      this.ctx.fillStyle = '#090e17';
+      this.ctx.beginPath();
+      this.ctx.arc(obj.cx, obj.cy, innerRadius, 0, Math.PI * 2);
+      this.ctx.fill();
+      this.ctx.strokeStyle = 'rgba(255, 255, 255, 0.12)';
+      this.ctx.lineWidth = 1.5;
+      this.ctx.stroke();
+
+      this.ctx.fillStyle = '#ffffff';
+      this.ctx.font = 'bold 17px Outfit, sans-serif';
       this.ctx.textAlign = 'center';
       this.ctx.textBaseline = 'middle';
       this.ctx.fillText(`${Math.round(total)}`, obj.cx, obj.cy - 6);
-      this.ctx.fillStyle = '#64748b';
-      this.ctx.font = '9px Outfit, sans-serif';
+
+      this.ctx.fillStyle = '#38bdf8';
+      this.ctx.font = 'bold 9px Outfit, sans-serif';
       this.ctx.fillText('TOTAL', obj.cx, obj.cy + 12);
 
     // 5. TRENDLINE
@@ -1306,17 +1350,17 @@ class ChartPaintStudio {
       this.ctx.stroke();
       this.ctx.setLineDash([]);
 
-      this.ctx.fillStyle = obj.color;
+      this.ctx.fillStyle = '#38bdf8';
       this.ctx.font = 'bold 11px Outfit, sans-serif';
       this.ctx.textAlign = 'left';
       this.ctx.fillText(obj.label, obj.x2 + 8, obj.y2);
 
     // 6. STAT CALLOUT CARD
     } else if (obj.type === 'stat_badge') {
-      this.ctx.fillStyle = '#ffffff';
+      this.ctx.fillStyle = 'rgba(11, 20, 38, 0.9)';
       this.ctx.strokeStyle = obj.color;
       this.ctx.lineWidth = 2;
-      this.ctx.shadowColor = 'rgba(0,0,0,0.08)';
+      this.ctx.shadowColor = 'rgba(0,0,0,0.4)';
       this.ctx.shadowBlur = 10;
       this.ctx.beginPath();
       this.ctx.roundRect(obj.x, obj.y, 160, 60, 10);
@@ -1324,20 +1368,19 @@ class ChartPaintStudio {
       this.ctx.stroke();
       this.ctx.shadowBlur = 0;
 
-      this.ctx.fillStyle = '#64748b';
+      this.ctx.fillStyle = '#94a3b8';
       this.ctx.font = 'bold 10px monospace';
       this.ctx.textAlign = 'left';
       this.ctx.fillText(obj.title, obj.x + 14, obj.y + 22);
 
-      this.ctx.fillStyle = obj.color;
+      this.ctx.fillStyle = '#ffffff';
       this.ctx.font = 'bold 16px Outfit, sans-serif';
       this.ctx.fillText(obj.value, obj.x + 14, obj.y + 46);
 
     // 7. CUSTOM TEXT ANNOTATION
     } else if (obj.type === 'text') {
-      this.ctx.fillStyle = obj.color;
+      this.ctx.fillStyle = obj.color === '#0f172a' ? '#ffffff' : obj.color;
       this.ctx.font = 'bold 13px Outfit, sans-serif';
-      this.ctx.textAlign = 'left';
       this.ctx.fillText(obj.text, obj.x, obj.y);
     }
 
