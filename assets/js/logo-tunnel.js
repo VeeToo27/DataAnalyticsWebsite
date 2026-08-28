@@ -1,44 +1,52 @@
 /**
- * High-Performance 60FPS Scroll-Driven 3D Data Particle Tunnel & Logo Engine
+ * High-Performance Scroll-Driven 3D Data Particle Tunnel & Logo Assembly Engine
  * Data Analytics Club - IMSUCC Ghaziabad
- * Optimized with glyph batching, direct matrix transforms, and optimal particle capping.
+ * Dark Theme Edition: Deep void canvas (#030712) with luminous neon data particles.
+ * Extended Time & Scrolling Effort: Takes significant scrolling with smooth cinematic physics (damping 0.032).
  */
 
 class LogoTunnelEngine {
   constructor(canvasId) {
     this.canvas = document.getElementById(canvasId);
-    this.ctx = this.canvas.getContext('2d', { alpha: false }); // Fast opaque canvas drawing
+    if (!this.canvas) return;
+
+    this.ctx = this.canvas.getContext('2d', { alpha: false });
     this.particles = [];
     this.streamParticles = [];
     this.logoPoints = [];
-    
-    // Scroll progress (0 = tunnel, 1 = logo)
-    this.scrollProgress = 0;
-    this.targetScrollProgress = 0;
+
+    // Mobile Check
+    this.isMobile = (window.innerWidth < 768) || ('ontouchstart' in window);
+
+    // Assembly State (0.0 = tunnel flight, 1.0 = fully assembled logo)
+    this.assemblyProgress = 0;
+    this.targetAssemblyProgress = 0;
+    this.logoAssembled = false;
+
     this.elapsedTime = 0;
     this.lastTime = performance.now();
 
-    this.mouse = { x: -9999, y: -9999, radius: 110, isOverCanvas: false };
+    this.mouse = { x: -9999, y: -9999, radius: this.isMobile ? 70 : 120, isOverCanvas: false };
     this.tilt = { x: 0, y: 0, targetX: 0, targetY: 0 };
     this.cameraZ = 650;
     this.fov = 420;
-    this.logoCenterOffsetY = -25;
+    this.logoCenterOffsetY = this.isMobile ? -15 : -25;
 
-    // Target particle count for 60fps smoothness
-    this.MAX_LOGO_PARTICLES = 480;
-    this.MAX_STREAMERS = 36;
+    // Particle Density for Pure-Particle Logo Formation
+    this.MAX_LOGO_PARTICLES = this.isMobile ? 280 : 700;
+    this.MAX_STREAMERS = this.isMobile ? 12 : 36;
 
-    // Shockwave state
+    // Shockwave State
     this.shockwave = {
       active: false,
       radius: 0,
-      maxRadius: 280,
+      maxRadius: this.isMobile ? 220 : 340,
       alpha: 1,
-      speed: 400
+      speed: 420
     };
     this.hasShockwaveTriggered = false;
 
-    // Catalog of data glyphs
+    // Glyphs
     this.NUMBERS = ['0', '1', '42', '3.14', '99', '7', '8', '%', '01'];
     this.MATH_CHARS = ['∑', 'π', 'f(x)', 'λ', 'μ', 'σ', 'β', 'Δ', '∫', '∞', '{ }'];
     this.GLYPH_TYPES = [
@@ -51,7 +59,9 @@ class LogoTunnelEngine {
       'DOT'
     ];
 
+    // Logo Image
     this.logoImg = new Image();
+    this.logoLoaded = false;
     this.logoImg.src = 'assets/images/club_logo.jpg';
 
     this.initEvents();
@@ -61,26 +71,97 @@ class LogoTunnelEngine {
 
   initEvents() {
     window.addEventListener('resize', () => {
+      this.isMobile = (window.innerWidth < 768) || ('ontouchstart' in window);
       this.resize();
       this.recalculateTargets();
     }, { passive: true });
 
-    // Throttled scroll listener
-    window.addEventListener('scroll', () => {
-      this.updateScrollProgress();
+    // 1. WHEEL SCROLL-LOCK INTERCEPTOR (Extended Time & Effort)
+    window.addEventListener('wheel', (e) => {
+      const atTop = window.scrollY <= 15;
+
+      if (atTop && !this.logoAssembled) {
+        if (e.deltaY > 0) {
+          // User scrolling down: lock page scroll and advance logo assembly very gradually
+          e.preventDefault();
+          this.targetAssemblyProgress = Math.min(1.0, this.targetAssemblyProgress + Math.min(0.022, Math.max(0.003, Math.abs(e.deltaY) * 0.00016)));
+
+          if (this.targetAssemblyProgress >= 1.0) {
+            this.targetAssemblyProgress = 1.0;
+            this.logoAssembled = true;
+          }
+        } else if (e.deltaY < 0) {
+          e.preventDefault();
+          this.targetAssemblyProgress = Math.max(0, this.targetAssemblyProgress - 0.02);
+        }
+      } else if (atTop && this.logoAssembled) {
+        // When assembled and at top, scrolling up un-assembles back into tunnel
+        if (e.deltaY < -20) {
+          this.targetAssemblyProgress = Math.max(0, this.targetAssemblyProgress - 0.02);
+          if (this.targetAssemblyProgress < 0.92) {
+            this.logoAssembled = false;
+          }
+        }
+      }
+    }, { passive: false });
+
+    // 2. TOUCH SCROLL-LOCK INTERCEPTOR (MOBILE)
+    let touchStartY = 0;
+    window.addEventListener('touchstart', (e) => {
+      if (e.touches.length > 0) {
+        touchStartY = e.touches[0].clientY;
+      }
     }, { passive: true });
 
+    window.addEventListener('touchmove', (e) => {
+      const atTop = window.scrollY <= 15;
+
+      if (atTop && !this.logoAssembled && e.touches.length > 0) {
+        const dy = touchStartY - e.touches[0].clientY; // Positive = swiping up (scrolling down)
+        
+        if (dy > 2) {
+          e.preventDefault();
+          this.targetAssemblyProgress = Math.min(1.0, this.targetAssemblyProgress + dy * 0.00048);
+          touchStartY = e.touches[0].clientY;
+
+          if (this.targetAssemblyProgress >= 1.0) {
+            this.targetAssemblyProgress = 1.0;
+            this.logoAssembled = true;
+          }
+        } else if (dy < -2) {
+          e.preventDefault();
+          this.targetAssemblyProgress = Math.max(0, this.targetAssemblyProgress + dy * 0.00048);
+          touchStartY = e.touches[0].clientY;
+        }
+      }
+    }, { passive: false });
+
+    // 3. KEYBOARD SCROLL-LOCK (ArrowDown, PageDown, Space)
+    window.addEventListener('keydown', (e) => {
+      const atTop = window.scrollY <= 15;
+      if (atTop && !this.logoAssembled && ['ArrowDown', 'PageDown', ' '].includes(e.key)) {
+        e.preventDefault();
+        this.targetAssemblyProgress = Math.min(1.0, this.targetAssemblyProgress + 0.025);
+        if (this.targetAssemblyProgress >= 1.0) {
+          this.targetAssemblyProgress = 1.0;
+          this.logoAssembled = true;
+        }
+      }
+    });
+
+    // 4. MOUSE MOVE TILT
     window.addEventListener('mousemove', (e) => {
+      if (this.isMobile) return;
       const rect = this.canvas.getBoundingClientRect();
       const rawX = e.clientX - rect.left;
       const rawY = e.clientY - rect.top;
 
-      this.mouse.x = rawX - this.canvas.width / 2;
-      this.mouse.y = rawY - (this.canvas.height / 2 + this.logoCenterOffsetY);
+      this.mouse.x = rawX - this.canvas.width / (2 * (this.dpr || 1));
+      this.mouse.y = rawY - (this.canvas.height / (2 * (this.dpr || 1)) + this.logoCenterOffsetY);
       this.mouse.isOverCanvas = (rawX >= 0 && rawX <= rect.width && rawY >= 0 && rawY <= rect.height);
 
-      this.tilt.targetX = (e.clientX / window.innerWidth - 0.5) * 0.3;
-      this.tilt.targetY = (e.clientY / window.innerHeight - 0.5) * 0.3;
+      this.tilt.targetX = (e.clientX / window.innerWidth - 0.5) * 0.25;
+      this.tilt.targetY = (e.clientY / window.innerHeight - 0.5) * 0.25;
     }, { passive: true });
 
     window.addEventListener('mouseleave', () => {
@@ -91,79 +172,56 @@ class LogoTunnelEngine {
       this.tilt.targetY = 0;
     });
 
-    window.addEventListener('touchmove', (e) => {
-      if (e.touches.length > 0) {
-        const rect = this.canvas.getBoundingClientRect();
-        this.mouse.x = e.touches[0].clientX - rect.left - this.canvas.width / 2;
-        this.mouse.y = e.touches[0].clientY - rect.top - (this.canvas.height / 2 + this.logoCenterOffsetY);
-        this.mouse.isOverCanvas = true;
-      }
-    }, { passive: true });
-
+    // 5. RESET / REPLAY BUTTON
     const replayBtn = document.getElementById('replay-intro-btn');
     if (replayBtn) {
       replayBtn.addEventListener('click', () => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
+        this.targetAssemblyProgress = 0;
+        this.assemblyProgress = 0;
+        this.logoAssembled = false;
+        this.hasShockwaveTriggered = false;
+
+        const glowRing = document.querySelector('.logo-glow-ring');
+        if (glowRing) glowRing.classList.remove('active');
+
+        const heroTitle = document.querySelector('.intro-title-reveal');
+        if (heroTitle) heroTitle.classList.remove('visible');
+
+        const scrollLabel = document.querySelector('#scroll-cue span');
+        if (scrollLabel) scrollLabel.textContent = 'Scroll Down To Assemble Logo';
       });
     }
   }
 
-  updateScrollProgress() {
-    const track = document.getElementById('intro-scroll-track');
-    if (!track) return;
-
-    const trackRect = track.getBoundingClientRect();
-    const scrollDistance = -trackRect.top;
-    const maxScroll = trackRect.height - window.innerHeight;
-
-    if (maxScroll <= 0) {
-      this.targetScrollProgress = 0;
-      return;
-    }
-
-    const progress = Math.max(0, Math.min(1, scrollDistance / maxScroll));
-    this.targetScrollProgress = progress;
-
-    const scrollLabel = document.querySelector('#scroll-cue span');
-    if (scrollLabel) {
-      if (progress < 0.15) {
-        scrollLabel.textContent = 'Scroll Down To Form Logo';
-      } else if (progress < 0.85) {
-        scrollLabel.textContent = 'Keep Scrolling...';
-      } else {
-        scrollLabel.textContent = 'Scroll Down To Explore';
-      }
-    }
-  }
-
   resize() {
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
-    this.canvas.width = (this.canvas.clientWidth || window.innerWidth) * dpr;
-    this.canvas.height = (this.canvas.clientHeight || window.innerHeight) * dpr;
-    this.ctx.scale(dpr, dpr);
+    this.dpr = this.isMobile ? 1.0 : Math.min(window.devicePixelRatio || 1, 2);
     this.viewWidth = this.canvas.clientWidth || window.innerWidth;
     this.viewHeight = this.canvas.clientHeight || window.innerHeight;
+
+    this.canvas.width = this.viewWidth * this.dpr;
+    this.canvas.height = this.viewHeight * this.dpr;
+    this.ctx.scale(this.dpr, this.dpr);
   }
 
   loadLogo() {
     this.logoImg.onload = () => {
+      this.logoLoaded = true;
       this.sampleLogoPixels();
       this.initParticles();
-      this.updateScrollProgress();
       this.startLoop();
     };
 
     this.logoImg.onerror = () => {
       this.generateProceduralLogoPoints();
       this.initParticles();
-      this.updateScrollProgress();
       this.startLoop();
     };
 
     if (this.logoImg.complete && this.logoImg.naturalWidth > 0) {
+      this.logoLoaded = true;
       this.sampleLogoPixels();
       this.initParticles();
-      this.updateScrollProgress();
       this.startLoop();
     }
   }
@@ -171,7 +229,7 @@ class LogoTunnelEngine {
   sampleLogoPixels() {
     const offCanvas = document.createElement('canvas');
     const offCtx = offCanvas.getContext('2d');
-    const sampleSize = 260;
+    const sampleSize = 240;
     offCanvas.width = sampleSize;
     offCanvas.height = sampleSize;
 
@@ -186,22 +244,32 @@ class LogoTunnelEngine {
 
     const data = imgData.data;
     const rawPoints = [];
-    const step = 6; // Optimal sampling step
+    const step = this.isMobile ? 7 : 4;
 
     for (let y = 0; y < sampleSize; y += step) {
       for (let x = 0; x < sampleSize; x += step) {
         const idx = (y * sampleSize + x) * 4;
-        const r = data[idx];
-        const g = data[idx + 1];
-        const b = data[idx + 2];
+        let r = data[idx];
+        let g = data[idx + 1];
+        let b = data[idx + 2];
         const a = data[idx + 3];
 
         const isWhite = r > 230 && g > 230 && b > 230;
         const isTransparent = a < 50;
 
         if (!isWhite && !isTransparent) {
-          const normX = (x - sampleSize / 2) * (330 / sampleSize);
-          const normY = (y - sampleSize / 2) * (330 / sampleSize);
+          const normX = (x - sampleSize / 2) * (300 / sampleSize);
+          const normY = (y - sampleSize / 2) * (300 / sampleSize);
+
+          // Boost brightness for Dark Theme luminescence
+          if (r < 60 && g < 60 && b < 60) {
+            // Dark navy turned into electric cyan / blue glow
+            r = 0; g = 180; b = 255;
+          } else {
+            r = Math.min(255, Math.round(r * 1.35 + 20));
+            g = Math.min(255, Math.round(g * 1.35 + 20));
+            b = Math.min(255, Math.round(b * 1.35 + 20));
+          }
 
           rawPoints.push({
             normX: normX,
@@ -215,14 +283,13 @@ class LogoTunnelEngine {
       }
     }
 
-    // Downsample evenly to MAX_LOGO_PARTICLES if needed
     if (rawPoints.length > this.MAX_LOGO_PARTICLES) {
       this.logoPoints = [];
       const stride = rawPoints.length / this.MAX_LOGO_PARTICLES;
       for (let i = 0; i < this.MAX_LOGO_PARTICLES; i++) {
         this.logoPoints.push(rawPoints[Math.floor(i * stride)]);
       }
-    } else if (rawPoints.length >= 250) {
+    } else if (rawPoints.length >= 120) {
       this.logoPoints = rawPoints;
     } else {
       this.generateProceduralLogoPoints();
@@ -231,61 +298,48 @@ class LogoTunnelEngine {
 
   generateProceduralLogoPoints() {
     this.logoPoints = [];
-    const radius = 150;
-    
-    // Outer Circle Ring (Navy)
-    for (let theta = 0; theta < Math.PI * 2; theta += 0.045) {
+    const radius = this.isMobile ? 120 : 150;
+
+    // Outer Circle Ring (Neon Cyan)
+    for (let theta = 0; theta < Math.PI * 2; theta += (this.isMobile ? 0.09 : 0.05)) {
       this.logoPoints.push({
         normX: Math.cos(theta) * radius,
         normY: Math.sin(theta) * radius,
-        r: 11, g: 34, b: 101, a: 1
+        r: 0, g: 240, b: 255, a: 1
       });
       this.logoPoints.push({
         normX: Math.cos(theta) * (radius - 8),
         normY: Math.sin(theta) * (radius - 8),
-        r: 11, g: 34, b: 101, a: 1
+        r: 0, g: 200, b: 255, a: 1
       });
     }
 
-    // Inner Ring (Brand Blue)
-    for (let theta = 0; theta < Math.PI * 2; theta += 0.055) {
+    // Inner Ring (Electric Blue)
+    for (let theta = 0; theta < Math.PI * 2; theta += (this.isMobile ? 0.1 : 0.06)) {
       this.logoPoints.push({
-        normX: Math.cos(theta) * (radius - 24),
-        normY: Math.sin(theta) * (radius - 24),
-        r: 29, g: 112, b: 184, a: 1
+        normX: Math.cos(theta) * (radius - 22),
+        normY: Math.sin(theta) * (radius - 22),
+        r: 59, g: 130, b: 246, a: 1
       });
     }
 
-    // Stars on flanks
-    const starLeft = { x: -radius + 14, y: 5 };
-    const starRight = { x: radius - 14, y: 5 };
-    [starLeft, starRight].forEach((st) => {
-      for (let theta = 0; theta < Math.PI * 2; theta += 0.6) {
-        this.logoPoints.push({
-          normX: st.x + Math.cos(theta) * 6,
-          normY: st.y + Math.sin(theta) * 6,
-          r: 245, g: 158, b: 11, a: 1
-        });
-      }
-    });
-
-    // Central Chart Bars
+    // Central Chart Bars (Neon Amber, Orange, Emerald, Blue)
     const barColors = [
-      { r: 100, g: 116, b: 139 },
-      { r: 245, g: 158, b: 11 },
+      { r: 148, g: 163, b: 184 },
+      { r: 251, g: 191, b: 36 },
       { r: 249, g: 115, b: 22 },
-      { r: 16, g: 185, b: 129 },
-      { r: 30, g: 96, b: 208 }
+      { r: 52, g: 211, b: 153 },
+      { r: 0, g: 240, b: 255 }
     ];
-    const barWidth = 14;
-    const barHeights = [35, 55, 75, 95, 110];
-    const startX = -50;
+    const barWidth = this.isMobile ? 10 : 14;
+    const barHeights = [30, 50, 70, 90, 105];
+    const startX = this.isMobile ? -40 : -50;
 
     barHeights.forEach((h, i) => {
-      const bx = startX + i * (barWidth + 8);
+      const bx = startX + i * (barWidth + 6);
       const col = barColors[i];
-      for (let x = bx; x <= bx + barWidth; x += 6) {
-        for (let y = 40; y >= 40 - h; y -= 6) {
+      for (let x = bx; x <= bx + barWidth; x += (this.isMobile ? 7 : 4)) {
+        for (let y = 35; y >= 35 - h; y -= (this.isMobile ? 7 : 4)) {
           this.logoPoints.push({
             normX: x,
             normY: y,
@@ -295,32 +349,14 @@ class LogoTunnelEngine {
       }
     });
 
-    // Upward Arrow (Gold)
+    // Upward Arrow (Neon Gold)
     for (let t = 0; t <= 1; t += 0.04) {
-      const ax = -60 + t * 140;
-      const ay = 30 - Math.pow(t, 1.4) * 85;
+      const ax = -50 + t * 120;
+      const ay = 25 - Math.pow(t, 1.4) * 75;
       this.logoPoints.push({
         normX: ax,
         normY: ay,
-        r: 245, g: 158, b: 11, a: 1
-      });
-    }
-
-    // Magnifying Glass
-    const mgRadius = 46;
-    const mgCenter = { x: -15, y: -5 };
-    for (let theta = 0; theta < Math.PI * 2; theta += 0.08) {
-      this.logoPoints.push({
-        normX: mgCenter.x + Math.cos(theta) * mgRadius,
-        normY: mgCenter.y + Math.sin(theta) * mgRadius,
-        r: 10, g: 28, b: 64, a: 1
-      });
-    }
-    for (let d = 0; d < 50; d += 5) {
-      this.logoPoints.push({
-        normX: mgCenter.x - (mgRadius + d) * 0.707,
-        normY: mgCenter.y + (mgRadius + d) * 0.707,
-        r: 10, g: 28, b: 64, a: 1
+        r: 251, g: 191, b: 36, a: 1
       });
     }
   }
@@ -328,7 +364,8 @@ class LogoTunnelEngine {
   recalculateTargets() {
     const w = this.viewWidth || window.innerWidth;
     const h = this.viewHeight || window.innerHeight;
-    const scale = Math.min(w, h) < 600 ? 0.85 : 1.2;
+    const scale = Math.min(w, h) < 600 ? 0.75 : 1.15;
+
     for (let i = 0; i < this.particles.length; i++) {
       const p = this.particles[i];
       if (p.logoTarget) {
@@ -343,23 +380,24 @@ class LogoTunnelEngine {
     this.streamParticles = [];
     const w = this.viewWidth || window.innerWidth;
     const h = this.viewHeight || window.innerHeight;
-    const scale = Math.min(w, h) < 600 ? 0.85 : 1.2;
+    const scale = Math.min(w, h) < 600 ? 0.75 : 1.15;
 
+    // Dark Theme Neon Glow Palette
     const tunnelColors = [
-      { r: 0, g: 168, b: 232 },
-      { r: 30, g: 96, b: 208 },
-      { r: 245, g: 158, b: 11 },
-      { r: 16, g: 185, b: 129 },
-      { r: 249, g: 115, b: 22 }
+      { r: 0, g: 240, b: 255 },
+      { r: 59, g: 130, b: 246 },
+      { r: 251, g: 191, b: 36 },
+      { r: 52, g: 211, b: 153 },
+      { r: 236, g: 72, b: 153 }
     ];
 
     this.logoPoints.forEach((lp, idx) => {
       const theta = Math.random() * Math.PI * 2;
-      const radius = 180 + Math.random() * 480;
-      const z = Math.random() * 3000 - 1500;
+      const radius = 160 + Math.random() * 420;
+      const z = Math.random() * 2600 - 1300;
       const startCol = tunnelColors[idx % tunnelColors.length];
 
-      const glyphType = this.GLYPH_TYPES[idx % this.GLYPH_TYPES.length];
+      const glyphType = this.isMobile ? 'DOT' : this.GLYPH_TYPES[idx % this.GLYPH_TYPES.length];
       const glyphText = glyphType === 'NUMBER'
         ? this.NUMBERS[idx % this.NUMBERS.length]
         : glyphType === 'CHAR'
@@ -369,8 +407,8 @@ class LogoTunnelEngine {
       this.particles.push({
         tunnelRadius: radius,
         tunnelTheta: theta,
-        tunnelSpeed: 28 + (idx % 14),
-        rotSpeed: ((idx % 7) - 3) * 0.003,
+        tunnelSpeed: 20 + (idx % 10),
+        rotSpeed: ((idx % 7) - 3) * 0.0018,
         x3d: Math.cos(theta) * radius,
         y3d: Math.sin(theta) * radius,
         z3d: z,
@@ -379,7 +417,7 @@ class LogoTunnelEngine {
         y: 0,
         vx: 0,
         vy: 0,
-        size: 2.2 + (idx % 3) * 0.4,
+        size: this.isMobile ? 2.0 : (2.2 + (idx % 3) * 0.4),
 
         logoTarget: lp,
         targetX: lp.normX * scale,
@@ -396,16 +434,15 @@ class LogoTunnelEngine {
         glyphType: glyphType,
         glyphText: glyphText,
 
-        oscFreq: 1.5 + (idx % 5) * 0.2,
+        oscFreq: 1.0 + (idx % 5) * 0.15,
         oscPhase: (idx % 10) * 0.6,
-        oscAmp: 1.2 + (idx % 3) * 0.4
+        oscAmp: this.isMobile ? 0.6 : 1.2
       });
     });
 
-    // Capped streamers for 60fps efficiency
     for (let i = 0; i < this.MAX_STREAMERS; i++) {
       const theta = (i / this.MAX_STREAMERS) * Math.PI * 2 + Math.random() * 0.2;
-      const radius = 180 + Math.random() * 500;
+      const radius = 160 + Math.random() * 450;
       const glyph = (i % 2 === 0)
         ? this.NUMBERS[i % this.NUMBERS.length]
         : this.MATH_CHARS[i % this.MATH_CHARS.length];
@@ -413,8 +450,8 @@ class LogoTunnelEngine {
       this.streamParticles.push({
         radius: radius,
         theta: theta,
-        z: Math.random() * 2400 - 1000,
-        speed: 45 + (i % 15),
+        z: Math.random() * 2200 - 900,
+        speed: 36 + (i % 10),
         color: tunnelColors[i % tunnelColors.length],
         glyph: glyph
       });
@@ -423,7 +460,6 @@ class LogoTunnelEngine {
 
   startLoop() {
     const render = (now) => {
-      // Delta time capped at 33ms (min 30fps baseline, smooth 60fps target)
       const dt = Math.min((now - this.lastTime) * 0.001, 0.033);
       this.lastTime = now;
       this.elapsedTime += dt;
@@ -437,19 +473,30 @@ class LogoTunnelEngine {
   }
 
   update(dt) {
-    // Smooth lerp of scroll progress (damping = 0.1)
-    this.scrollProgress += (this.targetScrollProgress - this.scrollProgress) * 0.1;
+    // Ultra-smooth, majestic damping (0.032) for longer, luxurious assembly motion
+    this.assemblyProgress += (this.targetAssemblyProgress - this.assemblyProgress) * 0.032;
 
-    // Smooth tilt
-    this.tilt.x += (this.tilt.targetX - this.tilt.x) * 0.08;
-    this.tilt.y += (this.tilt.targetY - this.tilt.y) * 0.08;
+    this.tilt.x += (this.tilt.targetX - this.tilt.x) * 0.06;
+    this.tilt.y += (this.tilt.targetY - this.tilt.y) * 0.06;
 
-    const convergeProgress = Math.max(0, Math.min(1, (this.scrollProgress - 0.12) / 0.73));
-    // Fast cubic easing
-    const ease = 1 - (1 - convergeProgress) * (1 - convergeProgress) * (1 - convergeProgress);
-    const isFullyAssembled = this.scrollProgress >= 0.85;
+    const ease = 1 - Math.pow(1 - this.assemblyProgress, 3);
+    const isFullyAssembled = this.assemblyProgress >= 0.92;
 
-    // Shockwave pulse
+    // Update Prompt Cue Text with Multi-Stage Feedback
+    const scrollLabel = document.querySelector('#scroll-cue span');
+    if (scrollLabel) {
+      if (this.assemblyProgress < 0.25) {
+        scrollLabel.textContent = 'Scroll Down To Assemble Logo';
+      } else if (this.assemblyProgress < 0.65) {
+        scrollLabel.textContent = 'Keep Scrolling... Swirling Particles';
+      } else if (this.assemblyProgress < 0.90) {
+        scrollLabel.textContent = 'Almost Formed... Locking Coordinates';
+      } else {
+        scrollLabel.textContent = 'Logo Assembled • Scroll Down To Explore ↓';
+      }
+    }
+
+    // Trigger shockwave pulse on completion
     if (isFullyAssembled && !this.hasShockwaveTriggered) {
       this.shockwave.active = true;
       this.shockwave.radius = 10;
@@ -478,53 +525,51 @@ class LogoTunnelEngine {
       }
     }
 
-    // Streamers update (only during tunnel)
-    if (convergeProgress < 0.95) {
+    // Streamers update
+    if (this.assemblyProgress < 0.9) {
       for (let i = 0; i < this.streamParticles.length; i++) {
         const s = this.streamParticles[i];
         s.z -= s.speed * 60 * dt;
         if (s.z < -this.cameraZ + 10) {
-          s.z = 2200;
+          s.z = 2000;
         }
       }
     }
 
     const mouseRadiusSq = this.mouse.radius * this.mouse.radius;
-    const hasMouse = this.mouse.isOverCanvas && ease > 0.6;
+    const hasMouse = this.mouse.isOverCanvas && ease > 0.5;
     const mx = this.mouse.x;
     const my = this.mouse.y;
 
-    // Main Particles Update (Highly optimized loop)
+    // Main Particles Update
     const len = this.particles.length;
     for (let i = 0; i < len; i++) {
       const p = this.particles[i];
 
-      // Tunnel simulation
       p.z3d -= p.tunnelSpeed * 60 * dt;
       p.tunnelTheta += p.rotSpeed;
       p.x3d = Math.cos(p.tunnelTheta) * p.tunnelRadius;
       p.y3d = Math.sin(p.tunnelTheta) * p.tunnelRadius;
 
       if (p.z3d < -this.cameraZ + 10) {
-        p.z3d = 2000;
+        p.z3d = 1800;
       }
 
       const k = this.fov / (this.cameraZ + p.z3d);
       const tunnelScreenX = p.x3d * k;
       const tunnelScreenY = p.y3d * k;
 
-      // Assembled logo oscillation & tilt
       const oscY = Math.sin(this.elapsedTime * p.oscFreq + p.oscPhase) * p.oscAmp;
-      const parallaxX = this.tilt.x * 28 * ease;
-      const parallaxY = this.tilt.y * 28 * ease;
+      const parallaxX = this.tilt.x * 20 * ease;
+      const parallaxY = this.tilt.y * 20 * ease;
 
       const targetX = p.targetX + parallaxX;
       const targetY = p.targetY + oscY + parallaxY;
 
-      const idealX = tunnelScreenX + (targetX - tunnelScreenX) * ease;
-      const idealY = tunnelScreenY + (targetY - tunnelScreenY) * ease;
+      // Solid locking on assembly completion
+      const idealX = (ease >= 0.98) ? targetX : (tunnelScreenX + (targetX - tunnelScreenX) * ease);
+      const idealY = (ease >= 0.98) ? targetY : (tunnelScreenY + (targetY - tunnelScreenY) * ease);
 
-      // Mouse repulsion using squared distance (skips Math.hypot for 60fps)
       if (hasMouse) {
         const dx = p.x - mx;
         const dy = p.y - my;
@@ -533,13 +578,12 @@ class LogoTunnelEngine {
         if (dSq < mouseRadiusSq && dSq > 1) {
           const dist = Math.sqrt(dSq);
           const force = (this.mouse.radius - dist) / this.mouse.radius;
-          const repelStrength = force * 40 * ease;
+          const repelStrength = force * 35 * ease;
           p.vx += (dx / dist) * repelStrength;
           p.vy += (dy / dist) * repelStrength;
         }
       }
 
-      // Spring damping physics
       p.vx += (idealX - p.x) * 0.12;
       p.vy += (idealY - p.y) * 0.12;
       p.vx *= 0.8;
@@ -548,13 +592,12 @@ class LogoTunnelEngine {
       p.x += p.vx;
       p.y += p.vy;
 
-      // Fast color lerp
       p.curR += (p.targetR - p.curR) * 0.08;
       p.curG += (p.targetG - p.curG) * 0.08;
       p.curB += (p.targetB - p.curB) * 0.08;
 
-      p.projectedSize = Math.max(1.0, p.size * (1 - ease) * (k * 2.2) + p.size * ease);
-      p.alpha = Math.min(1, Math.max(0.2, (2000 - p.z3d) / 1800 * (1 - ease) + 1.0 * ease));
+      p.projectedSize = Math.max(1.0, p.size * (1 - ease) * (k * 2.0) + p.size * ease);
+      p.alpha = Math.min(1, Math.max(0.3, (1800 - p.z3d) / 1600 * (1 - ease) + 1.0 * ease));
     }
   }
 
@@ -564,13 +607,13 @@ class LogoTunnelEngine {
     const cx = w * 0.5;
     const cy = h * 0.5 + this.logoCenterOffsetY;
 
-    // Fast clear
-    this.ctx.fillStyle = '#FAFBFC';
+    // Dark Theme Void Background (#030712)
+    this.ctx.fillStyle = '#030712';
     this.ctx.fillRect(0, 0, w, h);
 
-    // 1. Draw Streamers during tunnel state
-    if (this.scrollProgress < 0.8) {
-      const streamAlpha = (1 - this.scrollProgress / 0.8) * 0.5;
+    // 1. Draw Streamers during tunnel flight
+    if (this.assemblyProgress < 0.7) {
+      const streamAlpha = (1 - this.assemblyProgress / 0.7) * 0.6;
       this.ctx.font = 'bold 11px Outfit, sans-serif';
       this.ctx.textAlign = 'center';
       this.ctx.textBaseline = 'middle';
@@ -586,7 +629,7 @@ class LogoTunnelEngine {
       }
     }
 
-    // 2. Draw Data Particles (Direct drawing without repeated ctx.save/restore)
+    // 2. Draw Pure Data Particles Assembled Logo (No Raster Photo)
     this.ctx.font = 'bold 9px Outfit, sans-serif';
     this.ctx.textAlign = 'center';
     this.ctx.textBaseline = 'middle';
@@ -601,6 +644,14 @@ class LogoTunnelEngine {
       const b = Math.round(p.curB);
       const colorStr = `rgba(${r}, ${g}, ${b}, ${p.alpha})`;
 
+      if (this.isMobile || p.glyphType === 'DOT') {
+        this.ctx.fillStyle = colorStr;
+        this.ctx.beginPath();
+        this.ctx.arc(px, py, p.projectedSize, 0, 6.28);
+        this.ctx.fill();
+        continue;
+      }
+
       switch (p.glyphType) {
         case 'NUMBER':
         case 'CHAR':
@@ -609,58 +660,22 @@ class LogoTunnelEngine {
           break;
 
         case 'LINE_GRAPH': {
-          const s = p.projectedSize * 1.8;
+          const s = p.projectedSize * 1.6;
           this.ctx.strokeStyle = colorStr;
-          this.ctx.lineWidth = 1.2;
+          this.ctx.lineWidth = 1.3;
           this.ctx.beginPath();
-          this.ctx.moveTo(px - s, py + s * 0.6);
-          this.ctx.lineTo(px - s * 0.1, py - s * 0.5);
-          this.ctx.lineTo(px + s, py - s * 0.2);
+          this.ctx.moveTo(px - s, py + s * 0.5);
+          this.ctx.lineTo(px, py - s * 0.4);
+          this.ctx.lineTo(px + s, py - s * 0.1);
           this.ctx.stroke();
-
-          this.ctx.fillStyle = colorStr;
-          this.ctx.beginPath();
-          this.ctx.arc(px - s * 0.1, py - s * 0.5, 1.2, 0, 6.28);
-          this.ctx.fill();
-          break;
-        }
-
-        case 'PIE_CHART': {
-          const pr = Math.max(2.5, p.projectedSize * 1.3);
-          this.ctx.fillStyle = colorStr;
-          this.ctx.beginPath();
-          this.ctx.moveTo(px, py);
-          this.ctx.arc(px, py, pr, 0, 4.1);
-          this.ctx.closePath();
-          this.ctx.fill();
-
-          this.ctx.fillStyle = `rgba(245, 158, 11, ${p.alpha * 0.85})`;
-          this.ctx.beginPath();
-          this.ctx.moveTo(px, py);
-          this.ctx.arc(px, py, pr, 4.1, 6.28);
-          this.ctx.closePath();
-          this.ctx.fill();
           break;
         }
 
         case 'BAR_CHART': {
-          const bw = 1.6;
           this.ctx.fillStyle = colorStr;
-          this.ctx.fillRect(px - 3.5, py - 1.5, bw, 3.5);
-          this.ctx.fillRect(px - 0.8, py - 3.2, bw, 5.2);
-          this.ctx.fillRect(px + 1.8, py - 2.2, bw, 4.2);
-          break;
-        }
-
-        case 'PYRAMID_GRAPH': {
-          const s = Math.max(2.8, p.projectedSize * 1.5);
-          this.ctx.fillStyle = colorStr;
-          this.ctx.beginPath();
-          this.ctx.moveTo(px, py - s);
-          this.ctx.lineTo(px + s * 0.86, py + s * 0.6);
-          this.ctx.lineTo(px - s * 0.86, py + s * 0.6);
-          this.ctx.closePath();
-          this.ctx.fill();
+          this.ctx.fillRect(px - 3, py - 1.5, 1.6, 3.8);
+          this.ctx.fillRect(px - 0.5, py - 3, 1.6, 5.3);
+          this.ctx.fillRect(px + 2, py - 2, 1.6, 4.3);
           break;
         }
 
@@ -675,16 +690,16 @@ class LogoTunnelEngine {
 
     // 3. Draw Shockwave
     if (this.shockwave.active) {
-      this.ctx.strokeStyle = `rgba(0, 168, 232, ${this.shockwave.alpha * 0.85})`;
-      this.ctx.lineWidth = 3;
+      this.ctx.strokeStyle = `rgba(0, 240, 255, ${this.shockwave.alpha * 0.9})`;
+      this.ctx.lineWidth = 3.5;
       this.ctx.beginPath();
       this.ctx.arc(cx, cy, this.shockwave.radius, 0, 6.28);
       this.ctx.stroke();
 
-      this.ctx.strokeStyle = `rgba(245, 158, 11, ${this.shockwave.alpha * 0.55})`;
+      this.ctx.strokeStyle = `rgba(251, 191, 36, ${this.shockwave.alpha * 0.6})`;
       this.ctx.lineWidth = 1.5;
       this.ctx.beginPath();
-      this.ctx.arc(cx, cy, Math.max(0, this.shockwave.radius - 10), 0, 6.28);
+      this.ctx.arc(cx, cy, Math.max(0, this.shockwave.radius - 12), 0, 6.28);
       this.ctx.stroke();
     }
   }
