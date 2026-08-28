@@ -51,96 +51,95 @@
   <!-- Custom Stylesheet -->
   <link rel="stylesheet" href="assets/css/style.css">
 </head>
-<body class="bg-[#FAFAFC] text-brand-navy selection:bg-brand-blue/20 selection:text-brand-blue">
+<body class="bg-[#030712] text-slate-100 selection:bg-cyan-500/20 selection:text-cyan-400">
 
   <!-- Ambient Light Mesh Gradient Blobs -->
   <div class="mesh-blob blob-blue"></div>
   <div class="mesh-blob blob-amber"></div>
   <div class="mesh-blob blob-cyan"></div>
 
-  <!-- Minimalist Clean Navigation Bar -->
+  <!-- Minimalist Dark Navigation Bar -->
   <nav class="navbar flex items-center justify-between">
     <div class="flex items-center gap-3">
-      <div class="w-10 h-10 rounded-xl bg-white p-1 shadow-sm border border-slate-200 flex items-center justify-center">
+      <div class="w-10 h-10 rounded-xl bg-slate-900 p-1 shadow-sm border border-slate-800 flex items-center justify-center">
         <img src="assets/images/club_logo.jpg" alt="Data Analytics Club Logo" class="w-full h-full object-contain rounded-lg">
       </div>
       <div>
-        <span class="font-heading font-extrabold text-sm md:text-base tracking-tight text-brand-navy block leading-none">DATA ANALYTICS CLUB</span>
-        <span class="text-[10px] md:text-xs text-brand-blue font-semibold tracking-wider uppercase">IMSUCC Ghaziabad</span>
+        <span class="font-heading font-extrabold text-sm md:text-base tracking-tight text-white block leading-none">DATA ANALYTICS CLUB</span>
+        <span class="text-[10px] md:text-xs text-cyan-400 font-semibold tracking-wider uppercase">IMSUCC Ghaziabad</span>
       </div>
     </div>
 
     <!-- Mobile & Desktop Scrollable Navigation Strip -->
     <div class="mobile-nav-strip max-w-[60vw] md:max-w-none">
       <a href="#about-section" class="ctrl-btn text-xs">
-        <i data-lucide="info" class="w-3.5 h-3.5 text-brand-cyan"></i>
+        <i data-lucide="info" class="w-3.5 h-3.5 text-cyan-400"></i>
         <span>About</span>
       </a>
       <a href="#data-dashboard" class="ctrl-btn text-xs">
-        <i data-lucide="table" class="w-3.5 h-3.5 text-brand-emerald"></i>
+        <i data-lucide="table" class="w-3.5 h-3.5 text-emerald-400"></i>
         <span>Excel</span>
       </a>
       <a href="#sql-studio" class="ctrl-btn text-xs">
-        <i data-lucide="database" class="w-3.5 h-3.5 text-brand-blue"></i>
+        <i data-lucide="database" class="w-3.5 h-3.5 text-cyan-400"></i>
         <span>SQL</span>
       </a>
       <a href="#drawing-studio" class="ctrl-btn text-xs">
-        <i data-lucide="pen-tool" class="w-3.5 h-3.5 text-brand-cyan"></i>
+        <i data-lucide="pen-tool" class="w-3.5 h-3.5 text-purple-400"></i>
         <span>Draw</span>
       </a>
       <a href="#neural-studio" class="ctrl-btn text-xs">
-        <i data-lucide="network" class="w-3.5 h-3.5 text-brand-purple"></i>
+        <i data-lucide="network" class="w-3.5 h-3.5 text-indigo-400"></i>
         <span>Neural</span>
       </a>
       <a href="#vector-field-studio" class="ctrl-btn text-xs">
-        <i data-lucide="globe" class="w-3.5 h-3.5 text-brand-cyan"></i>
+        <i data-lucide="globe" class="w-3.5 h-3.5 text-cyan-400"></i>
         <span>Vector 3D</span>
       </a>
       <a href="#ml-sandbox" class="ctrl-btn text-xs">
-        <i data-lucide="cpu" class="w-3.5 h-3.5 text-brand-emerald"></i>
+        <i data-lucide="cpu" class="w-3.5 h-3.5 text-emerald-400"></i>
         <span>ML Sandbox</span>
       </a>
       <button id="replay-intro-btn" class="ctrl-btn" title="Reset and return to top">
-        <i data-lucide="rotate-ccw" class="w-3.5 h-3.5 text-brand-blue"></i>
+        <i data-lucide="rotate-ccw" class="w-3.5 h-3.5 text-amber-400"></i>
         <span>Reset</span>
       </button>
     </div>
   </nav>
 
   <!-- =========================================================================
-       HERO SECTION 1 (LIGHT THEME): 3D DATA PARTICLE TUNNEL & LOGO ASSEMBLY
+       HERO SECTION 1 (DARK THEME): 3D DATA PARTICLE TUNNEL & LOGO ASSEMBLY
+       (Locked scroll advances 3D particle assembly; releases page scroll when formed)
        ========================================================================= -->
-  <div id="intro-scroll-track" class="relative w-full h-[260vh]">
-    <div id="intro-sticky-container" class="sticky top-0 left-0 w-full h-screen overflow-hidden flex flex-col items-center justify-center">
-      
-      <!-- 3D WebGL / Canvas for Data Tunnel & Morphing Logo -->
-      <canvas id="logo-tunnel-canvas"></canvas>
+  <section id="intro-hero-section" class="relative w-full h-screen overflow-hidden flex flex-col items-center justify-center">
+    
+    <!-- 3D WebGL / Canvas for Data Tunnel & Morphing Logo -->
+    <canvas id="logo-tunnel-canvas"></canvas>
 
-      <!-- Visual Glow Halo on Logo Convergence -->
-      <div class="logo-glow-ring"></div>
+    <!-- Visual Glow Halo on Logo Convergence -->
+    <div class="logo-glow-ring"></div>
 
-      <!-- Overlay Title Revealed Gracefully on Convergence -->
-      <div class="intro-overlay mt-[340px] md:mt-[380px]">
-        <div class="intro-title-reveal text-center">
-          <h1 class="text-3xl md:text-5xl lg:text-6xl font-extrabold text-brand-navy tracking-tight leading-tight font-heading">
-            DATA ANALYTICS CLUB
-          </h1>
-          <p class="text-xs md:text-sm font-bold tracking-widest text-brand-blue uppercase mt-1">
-            IMSUCC GHAZIABAD
-          </p>
-        </div>
+    <!-- Overlay Title Revealed Gracefully on Convergence -->
+    <div class="intro-overlay mt-[340px] md:mt-[380px]">
+      <div class="intro-title-reveal text-center">
+        <h1 class="text-3xl md:text-5xl lg:text-6xl font-extrabold text-white tracking-tight leading-tight font-heading">
+          DATA ANALYTICS CLUB
+        </h1>
+        <p class="text-xs md:text-sm font-bold tracking-widest text-cyan-400 uppercase mt-1">
+          IMSUCC GHAZIABAD
+        </p>
       </div>
-
-      <!-- Scroll Down Indicator & Real-Time Prompt -->
-      <div id="scroll-cue" class="scroll-cue">
-        <span>Scroll Down To Form Logo</span>
-        <div class="scroll-mouse">
-          <div class="scroll-wheel"></div>
-        </div>
-      </div>
-
     </div>
-  </div>
+
+    <!-- Scroll Down Indicator & Real-Time Prompt -->
+    <div id="scroll-cue" class="scroll-cue">
+      <span>Scroll Down To Assemble Logo</span>
+      <div class="scroll-mouse">
+        <div class="scroll-wheel"></div>
+      </div>
+    </div>
+
+  </section>
 
   <!-- =========================================================================
        SECTION 2 (DARK THEME): MINIMAL ABOUT & DATA ECOSYSTEM
@@ -316,28 +315,24 @@
   </section>
 
   <!-- =========================================================================
-       SECTION 3 (LIGHT THEME): INTERACTIVE MS EXCEL STUDIO & DYNAMIC CHARTS
+       SECTION 3 (DARK THEME): INTERACTIVE MS EXCEL STUDIO & DYNAMIC CHARTS
        (Drag & Drop Excel/CSV on Left, Reactive Animated Chart on Right)
        ========================================================================= -->
   <section id="data-dashboard" class="relative z-20 py-28 px-6">
     
-    <!-- Light Mesh Glow Blobs -->
-    <div class="mesh-blob blob-blue" style="top: 15%; left: -5%;"></div>
-    <div class="mesh-blob blob-amber" style="bottom: 10%; right: -5%;"></div>
-
     <div class="max-w-[1400px] mx-auto relative z-10">
       
-      <!-- Section Header (Canva Light Style) -->
+      <!-- Section Header -->
       <div class="text-center max-w-4xl mx-auto mb-16 fade-in-up">
-        <div class="canva-pill pill-emerald mb-4">
+        <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-950/70 border border-emerald-500/30 text-emerald-400 text-xs font-mono font-bold tracking-widest uppercase mb-4 shadow-[0_0_15px_rgba(16,185,129,0.2)]">
           <i data-lucide="file-spreadsheet" class="w-4 h-4"></i>
           <span>Interactive Multi-Column Excel Studio // Drag & Drop Enabled</span>
         </div>
-        <h2 class="text-3xl md:text-5xl lg:text-6xl font-extrabold text-brand-navy tracking-tight font-heading mt-2">
+        <h2 class="text-3xl md:text-5xl lg:text-6xl font-extrabold text-white tracking-tight font-heading mt-2">
           SPREADSHEET TO DYNAMIC VISUALS
         </h2>
-        <p class="text-slate-600 text-sm md:text-base mt-4 max-w-2xl mx-auto">
-          Drag & drop your own Excel spreadsheet (<code class="bg-slate-100 px-1.5 py-0.5 rounded text-emerald-700 text-xs font-mono font-bold">.xlsx</code>, <code class="bg-slate-100 px-1.5 py-0.5 rounded text-emerald-700 text-xs font-mono font-bold">.csv</code>) or edit rows & columns below to watch the live animated charts!
+        <p class="text-slate-400 text-sm md:text-base mt-4 max-w-2xl mx-auto">
+          Drag & drop your own Excel spreadsheet (<code class="bg-slate-800 px-1.5 py-0.5 rounded text-emerald-400 text-xs font-mono font-bold">.xlsx</code>, <code class="bg-slate-800 px-1.5 py-0.5 rounded text-emerald-400 text-xs font-mono font-bold">.csv</code>) or edit rows & columns below to watch the live animated charts!
         </p>
       </div>
 
@@ -351,12 +346,12 @@
           <div id="excel-dropzone" class="excel-dropzone group">
             <input type="file" id="excel-file-input" class="hidden" accept=".xlsx, .xls, .csv">
             <div class="flex items-center justify-center gap-3">
-              <div class="w-11 h-11 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center group-hover:scale-110 transition-transform shadow-sm">
+              <div class="w-11 h-11 rounded-xl bg-emerald-950 text-emerald-400 border border-emerald-500/30 flex items-center justify-center group-hover:scale-110 transition-transform shadow-sm">
                 <i data-lucide="upload-cloud" class="w-5 h-5"></i>
               </div>
               <div class="text-left">
-                <p id="excel-drop-label" class="text-xs md:text-sm font-semibold text-slate-700 leading-tight">
-                  <span class="text-emerald-600 font-bold">Click or drag & drop</span> your Excel / CSV file
+                <p id="excel-drop-label" class="text-xs md:text-sm font-semibold text-slate-200 leading-tight">
+                  <span class="text-emerald-400 font-bold">Click or drag & drop</span> your Excel / CSV file
                 </p>
                 <span class="text-[11px] text-slate-400">Supports massive multi-column .xlsx, .xls, .csv files</span>
               </div>
@@ -373,13 +368,13 @@
                   <div class="w-6 h-6 rounded bg-emerald-600 flex items-center justify-center text-white font-bold text-xs shadow-sm">
                     X
                   </div>
-                  <span class="text-xs font-bold text-slate-800 tracking-wide">Data_Workbook.xlsx</span>
+                  <span class="text-xs font-bold text-slate-200 tracking-wide">Data_Workbook.xlsx</span>
                 </div>
 
                 <!-- Search / Filter Box & Preset Selector -->
                 <div class="flex items-center gap-2">
-                  <input type="text" id="excel-search-input" placeholder="🔍 Filter rows..." class="bg-white text-slate-700 text-xs rounded-md border border-slate-300 px-2.5 py-1 outline-none focus:border-emerald-500 shadow-sm w-32 sm:w-40">
-                  <select id="excel-dataset-select" class="bg-white text-slate-700 text-xs rounded-md border border-slate-300 px-2 py-1 outline-none focus:border-emerald-500 shadow-sm">
+                  <input type="text" id="excel-search-input" placeholder="🔍 Filter rows..." class="bg-slate-900 text-slate-200 text-xs rounded-md border border-slate-700 px-2.5 py-1 outline-none focus:border-emerald-400 shadow-sm w-32 sm:w-40">
+                  <select id="excel-dataset-select" class="bg-slate-900 text-slate-200 text-xs rounded-md border border-slate-700 px-2 py-1 outline-none focus:border-emerald-400 shadow-sm">
                     <option value="domains">Domain Registrations</option>
                     <option value="growth">Quarterly Growth</option>
                     <option value="tools">Tech Stack Usage</option>
@@ -388,9 +383,9 @@
               </div>
 
               <!-- Formula Bar Strip -->
-              <div class="flex items-center gap-2 pt-1 border-t border-slate-200">
+              <div class="flex items-center gap-2 pt-1 border-t border-slate-800">
                 <div id="excel-name-box" class="excel-name-box">A1</div>
-                <div class="text-xs font-serif font-bold text-slate-500 italic">fx</div>
+                <div class="text-xs font-serif font-bold text-slate-400 italic">fx</div>
                 <input id="excel-formula-input" type="text" class="excel-formula-bar" value="=CELL(A1)" readonly>
               </div>
             </div>
@@ -408,36 +403,36 @@
             </div>
 
             <!-- Table Actions Bar: Single Row, 10 Rows Batch, Add Column, Export CSV, Reset -->
-            <div class="p-3 bg-slate-50 border-t border-slate-200 flex flex-wrap items-center justify-between gap-2">
+            <div class="p-3 bg-slate-900/90 border-t border-slate-800 flex flex-wrap items-center justify-between gap-2">
               <div class="flex flex-wrap items-center gap-1.5 md:gap-2">
-                <button id="excel-add-row-btn" class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-emerald-50 border border-emerald-300 text-emerald-700 text-xs font-bold hover:bg-emerald-100 transition-colors shadow-sm" title="Add 1 new row">
+                <button id="excel-add-row-btn" class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-emerald-950/70 border border-emerald-500/40 text-emerald-300 text-xs font-bold hover:bg-emerald-900 transition-colors shadow-sm" title="Add 1 new row">
                   <i data-lucide="plus" class="w-3.5 h-3.5"></i>
                   <span>Add Row</span>
                 </button>
 
-                <button id="excel-add-10-btn" class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-emerald-50 border border-emerald-300 text-emerald-700 text-xs font-bold hover:bg-emerald-100 transition-colors shadow-sm" title="Generate 10 rows for stress test">
+                <button id="excel-add-10-btn" class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-emerald-950/70 border border-emerald-500/40 text-emerald-300 text-xs font-bold hover:bg-emerald-900 transition-colors shadow-sm" title="Generate 10 rows for stress test">
                   <i data-lucide="plus-circle" class="w-3.5 h-3.5"></i>
                   <span>+10 Rows</span>
                 </button>
 
-                <button id="excel-add-col-btn" class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-blue-50 border border-blue-300 text-brand-blue text-xs font-bold hover:bg-blue-100 transition-colors shadow-sm" title="Add new metric column">
+                <button id="excel-add-col-btn" class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-blue-950/70 border border-blue-500/40 text-cyan-300 text-xs font-bold hover:bg-blue-900 transition-colors shadow-sm" title="Add new metric column">
                   <i data-lucide="columns" class="w-3.5 h-3.5"></i>
                   <span>Add Col</span>
                 </button>
 
-                <button id="excel-export-csv-btn" class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-slate-100 border border-slate-300 text-slate-700 text-xs font-semibold hover:bg-slate-200 transition-colors shadow-sm" title="Download as CSV file">
+                <button id="excel-export-csv-btn" class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-slate-800 border border-slate-700 text-slate-200 text-xs font-semibold hover:bg-slate-700 transition-colors shadow-sm" title="Download as CSV file">
                   <i data-lucide="download" class="w-3.5 h-3.5"></i>
                   <span>Export CSV</span>
                 </button>
               </div>
 
               <div class="flex items-center gap-1.5">
-                <button id="excel-clear-btn" class="inline-flex items-center gap-1 px-2 py-1.5 rounded-lg text-slate-500 hover:text-red-600 text-xs font-medium transition-colors" title="Clear all rows">
+                <button id="excel-clear-btn" class="inline-flex items-center gap-1 px-2 py-1.5 rounded-lg text-slate-400 hover:text-red-400 text-xs font-medium transition-colors" title="Clear all rows">
                   <i data-lucide="trash" class="w-3 h-3"></i>
                   <span>Clear</span>
                 </button>
 
-                <button id="excel-reset-btn" class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-white border border-slate-200 text-slate-600 text-xs font-medium hover:text-slate-900 transition-colors shadow-sm">
+                <button id="excel-reset-btn" class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-slate-800 border border-slate-700 text-slate-300 text-xs font-medium hover:text-white transition-colors shadow-sm">
                   <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
                   <span>Reset</span>
                 </button>
@@ -454,56 +449,52 @@
             <!-- Chart Header Controls (Type Switcher Tabs) -->
             <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
               <div>
-                <span class="text-xs font-mono font-bold text-brand-blue tracking-wider uppercase block">REACTIVE GRAPH VISUALIZER</span>
-                <h3 class="text-xl md:text-2xl font-bold text-brand-navy font-heading">Interactive Chart Output</h3>
+                <h3 class="text-base font-bold text-white font-heading">REACTIVE DYNAMIC VISUAL</h3>
+                <p class="text-xs text-slate-400">Live multi-series binding with cubic Bézier spline interpolation</p>
               </div>
 
-              <!-- Chart Type Tabs: Bar Graph, Pie Chart, Line Graph -->
-              <div class="flex items-center gap-2 p-1.5 rounded-full bg-slate-100 border border-slate-200">
-                <button class="chart-type-tab active" data-chart-type="bar">
-                  <i data-lucide="bar-chart-2" class="w-4 h-4"></i>
-                  <span>Bar Graph</span>
+              <!-- Chart Type Selectors -->
+              <div class="flex items-center gap-1.5 bg-slate-900/80 p-1 rounded-full border border-slate-800 shadow-sm">
+                <button class="chart-type-tab active" data-chart="bar">
+                  <i data-lucide="bar-chart-2" class="w-3.5 h-3.5"></i>
+                  <span>Bar</span>
                 </button>
-                <button class="chart-type-tab" data-chart-type="pie">
-                  <i data-lucide="pie-chart" class="w-4 h-4"></i>
-                  <span>Pie Chart</span>
+                <button class="chart-type-tab" data-chart="pie">
+                  <i data-lucide="pie-chart" class="w-3.5 h-3.5"></i>
+                  <span>Donut</span>
                 </button>
-                <button class="chart-type-tab" data-chart-type="line">
-                  <i data-lucide="trending-up" class="w-4 h-4"></i>
-                  <span>Line Graph</span>
+                <button class="chart-type-tab" data-chart="line">
+                  <i data-lucide="trending-up" class="w-3.5 h-3.5"></i>
+                  <span>Spline</span>
                 </button>
               </div>
             </div>
 
-            <!-- KPI Metric Summary Bar -->
-            <div class="grid grid-cols-4 gap-3 md:gap-4 mb-6">
+            <!-- KPI Metric Summary Tiles -->
+            <div class="grid grid-cols-3 gap-3 mb-4">
               <div class="kpi-mini-card">
-                <span class="text-[11px] font-mono text-slate-500 uppercase tracking-wider block">TOTAL SUM</span>
-                <span id="kpi-total-val" class="text-base md:text-xl font-bold text-brand-navy font-mono">0</span>
+                <span class="text-[11px] font-mono text-slate-400 uppercase tracking-wider block">AVERAGE</span>
+                <span id="kpi-avg-val" class="text-base md:text-xl font-bold text-cyan-400 font-mono">0</span>
               </div>
               <div class="kpi-mini-card">
-                <span class="text-[11px] font-mono text-slate-500 uppercase tracking-wider block">AVERAGE</span>
-                <span id="kpi-avg-val" class="text-base md:text-xl font-bold text-brand-blue font-mono">0</span>
+                <span class="text-[11px] font-mono text-slate-400 uppercase tracking-wider block">MAX PEAK</span>
+                <span id="kpi-max-val" class="text-base md:text-xl font-bold text-amber-400 font-mono">0</span>
               </div>
               <div class="kpi-mini-card">
-                <span class="text-[11px] font-mono text-slate-500 uppercase tracking-wider block">MAX PEAK</span>
-                <span id="kpi-max-val" class="text-base md:text-xl font-bold text-brand-amber font-mono">0</span>
-              </div>
-              <div class="kpi-mini-card">
-                <span class="text-[11px] font-mono text-slate-500 uppercase tracking-wider block">RECORDS</span>
-                <span id="kpi-count-val" class="text-base md:text-xl font-bold text-brand-emerald font-mono">0</span>
+                <span class="text-[11px] font-mono text-slate-400 uppercase tracking-wider block">RECORDS</span>
+                <span id="kpi-count-val" class="text-base md:text-xl font-bold text-emerald-400 font-mono">0</span>
               </div>
             </div>
 
             <!-- Interactive Large Canvas Container (520px Height) -->
-            <div class="relative w-full h-[520px] rounded-xl bg-white border border-slate-200 p-3 flex items-center justify-center overflow-hidden shadow-inner">
+            <div class="relative w-full h-[520px] rounded-xl bg-[#091122] border border-slate-800 p-3 flex items-center justify-center overflow-hidden shadow-inner">
               <canvas id="dashboard-chart-canvas" class="w-full h-full block"></canvas>
             </div>
 
             <!-- Chart Footer Note -->
-            <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500 font-mono">
-              <span class="flex items-center gap-1.5 text-brand-blue font-semibold">
-                <i data-lucide="zap" class="w-3.5 h-3.5 text-brand-blue"></i>
+            <div class="mt-4 pt-3 border-t border-slate-800 flex items-center justify-between text-xs text-slate-400 font-mono">
+              <span class="flex items-center gap-1.5 text-cyan-400 font-semibold">
+                <i data-lucide="zap" class="w-3.5 h-3.5 text-cyan-400"></i>
                 <span>High-Load Optimized // 2.2s Morph Transition</span>
               </span>
               <span>MULTI-SERIES SPREADSHEET BINDING</span>
@@ -680,43 +671,39 @@ CREATE TABLE hackathons (
   </section>
 
   <!-- =========================================================================
-       SECTION 5 (LIGHT THEME): INTERACTIVE MS PAINT-STYLE DRAWING STUDIO
-       (Freehand Mouse Drawing + AI Smart Chart Auto-Fix & Snapping Engine)
+       SECTION 5 (DARK THEME): MS PAINT-STYLE DATA DRAW STUDIO & AUTO-FIX ENGINE
+       (Calibrated X/Y Axis Tool, Snapped Bars/Lines/Pies, and Click-to-Edit Pie Figures)
        ========================================================================= -->
-  <section id="drawing-studio" class="relative z-20 py-24 px-6 bg-[#FAFAFC]">
+  <section id="drawing-studio" class="relative z-20 py-24 px-6">
     
-    <!-- Light Mesh Glow Blobs -->
-    <div class="mesh-blob blob-cyan" style="top: 10%; right: -5%;"></div>
-    <div class="mesh-blob blob-amber" style="bottom: 10%; left: -5%;"></div>
-
     <div class="max-w-[1400px] mx-auto relative z-10">
       
       <!-- Section Header -->
       <div class="text-center max-w-3xl mx-auto mb-12 fade-in-up">
-        <div class="canva-pill pill-cyan mb-3">
+        <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-purple-950/70 border border-purple-500/30 text-purple-400 text-xs font-mono font-bold tracking-widest uppercase mb-4 shadow-[0_0_15px_rgba(168,85,247,0.2)]">
           <i data-lucide="pen-tool" class="w-4 h-4"></i>
           <span>Interactive Paint Studio // Accurate Axis Calibration</span>
         </div>
-        <h2 class="text-3xl md:text-5xl lg:text-6xl font-extrabold text-brand-navy tracking-tight font-heading">
+        <h2 class="text-3xl md:text-5xl lg:text-6xl font-extrabold text-white tracking-tight font-heading">
           DRAW & AUTO-PERFECT GRAPHS
         </h2>
-        <p class="text-slate-600 text-sm md:text-base mt-3 max-w-2xl mx-auto">
+        <p class="text-slate-400 text-sm md:text-base mt-3 max-w-2xl mx-auto">
           Draw accurate X & Y axes with custom scales, or sketch rough bar charts, spline lines, and donut charts. The animation auto-detects, auto-calibrates, and snaps your drawings into mathematically aligned graphs!
         </p>
 
         <!-- Quick Stencil Presets -->
         <div class="flex flex-wrap items-center justify-center gap-2 mt-6">
           <span class="text-xs font-mono text-slate-400 font-bold uppercase mr-1">QUICK STENCILS:</span>
-          <button id="paint-stencil-axis-btn" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white border border-slate-300 text-slate-700 text-xs font-semibold hover:border-brand-blue hover:text-brand-blue transition-all shadow-sm">
-            <i data-lucide="ruler" class="w-3.5 h-3.5 text-brand-blue"></i>
+          <button id="paint-stencil-axis-btn" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-900 border border-slate-700 text-slate-300 text-xs font-semibold hover:border-cyan-400 hover:text-cyan-400 transition-all shadow-sm">
+            <i data-lucide="ruler" class="w-3.5 h-3.5 text-cyan-400"></i>
             <span>+ Calibrated Axis</span>
           </button>
-          <button id="paint-stencil-trend-btn" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white border border-slate-300 text-slate-700 text-xs font-semibold hover:border-amber-500 hover:text-amber-600 transition-all shadow-sm">
-            <i data-lucide="trending-up" class="w-3.5 h-3.5 text-amber-500"></i>
+          <button id="paint-stencil-trend-btn" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-900 border border-slate-700 text-slate-300 text-xs font-semibold hover:border-amber-400 hover:text-amber-400 transition-all shadow-sm">
+            <i data-lucide="trending-up" class="w-3.5 h-3.5 text-amber-400"></i>
             <span>+ Linear Trendline</span>
           </button>
-          <button id="paint-stencil-stat-btn" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white border border-slate-300 text-slate-700 text-xs font-semibold hover:border-emerald-500 hover:text-emerald-600 transition-all shadow-sm">
-            <i data-lucide="tag" class="w-3.5 h-3.5 text-emerald-500"></i>
+          <button id="paint-stencil-stat-btn" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-900 border border-slate-700 text-slate-300 text-xs font-semibold hover:border-emerald-400 hover:text-emerald-400 transition-all shadow-sm">
+            <i data-lucide="tag" class="w-3.5 h-3.5 text-emerald-400"></i>
             <span>+ Stat Callout</span>
           </button>
         </div>
@@ -762,45 +749,45 @@ CREATE TABLE hackathons (
 
           <!-- Color Palette Picker -->
           <div class="flex items-center gap-2">
-            <span class="text-xs font-semibold text-slate-500 hidden sm:inline">Color:</span>
+            <span class="text-xs font-semibold text-slate-400 hidden sm:inline">Color:</span>
             <div class="flex items-center gap-1.5">
-              <button class="paint-color-chip active" style="background-color: #1e60d0;" data-color="#1e60d0" title="Royal Blue"></button>
-              <button class="paint-color-chip" style="background-color: #00a8e8;" data-color="#00a8e8" title="Electric Cyan"></button>
+              <button class="paint-color-chip active" style="background-color: #00f0ff;" data-color="#00f0ff" title="Electric Cyan"></button>
+              <button class="paint-color-chip" style="background-color: #3b82f6;" data-color="#3b82f6" title="Royal Blue"></button>
               <button class="paint-color-chip" style="background-color: #10b981;" data-color="#10b981" title="Emerald Green"></button>
               <button class="paint-color-chip" style="background-color: #f59e0b;" data-color="#f59e0b" title="Amber Orange"></button>
-              <button class="paint-color-chip" style="background-color: #8b5cf6;" data-color="#8b5cf6" title="Purple"></button>
+              <button class="paint-color-chip" style="background-color: #a855f7;" data-color="#a855f7" title="Purple"></button>
               <button class="paint-color-chip" style="background-color: #f97316;" data-color="#f97316" title="Coral"></button>
-              <button class="paint-color-chip" style="background-color: #0f172a;" data-color="#0f172a" title="Midnight Navy"></button>
+              <button class="paint-color-chip" style="background-color: #ffffff;" data-color="#ffffff" title="White"></button>
             </div>
           </div>
 
           <!-- Size Slider & Action Tools -->
           <div class="flex items-center gap-3">
             <div class="hidden md:flex items-center gap-2">
-              <span class="text-xs font-semibold text-slate-500">Size:</span>
-              <input type="range" id="paint-size-slider" min="2" max="20" value="3" class="w-16 h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-brand-blue">
-              <span id="paint-size-val" class="text-xs font-mono font-bold text-slate-600 w-8">3px</span>
+              <span class="text-xs font-semibold text-slate-400">Size:</span>
+              <input type="range" id="paint-size-slider" min="2" max="20" value="3" class="w-16 h-1.5 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-cyan-400">
+              <span id="paint-size-val" class="text-xs font-mono font-bold text-slate-300 w-8">3px</span>
             </div>
 
             <div class="flex items-center gap-1.5">
-              <button id="paint-undo-btn" class="p-2 rounded-lg bg-slate-100 text-slate-700 hover:bg-slate-200 transition-colors shadow-sm" title="Undo (Ctrl+Z)">
+              <button id="paint-undo-btn" class="p-2 rounded-lg bg-slate-800 text-slate-300 hover:bg-slate-700 transition-colors shadow-sm" title="Undo (Ctrl+Z)">
                 <i data-lucide="undo" class="w-4 h-4"></i>
               </button>
-              <button id="paint-redo-btn" class="p-2 rounded-lg bg-slate-100 text-slate-700 hover:bg-slate-200 transition-colors shadow-sm" title="Redo (Ctrl+Y)">
+              <button id="paint-redo-btn" class="p-2 rounded-lg bg-slate-800 text-slate-300 hover:bg-slate-700 transition-colors shadow-sm" title="Redo (Ctrl+Y)">
                 <i data-lucide="redo" class="w-4 h-4"></i>
               </button>
-              <button id="paint-edit-pie-btn" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-50 border border-amber-300 text-amber-800 text-xs font-bold shadow-sm hover:bg-amber-100 active:scale-95 transition-all" title="Edit Pie Chart Figures & Percentages">
-                <i data-lucide="pie-chart" class="w-3.5 h-3.5 text-amber-600"></i>
+              <button id="paint-edit-pie-btn" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-950/80 border border-amber-500/40 text-amber-300 text-xs font-bold shadow-sm hover:bg-amber-900 active:scale-95 transition-all" title="Edit Pie Chart Figures & Percentages">
+                <i data-lucide="pie-chart" class="w-3.5 h-3.5 text-amber-400"></i>
                 <span>Edit Figures</span>
               </button>
-              <button id="paint-autofix-btn" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gradient-to-r from-brand-blue to-cyan-500 text-white text-xs font-bold shadow-sm hover:brightness-110 active:scale-95 transition-all" title="Auto-Fix & Perfect All Rough Sketches">
+              <button id="paint-autofix-btn" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gradient-to-r from-cyan-500 to-blue-600 text-white text-xs font-bold shadow-sm hover:brightness-110 active:scale-95 transition-all" title="Auto-Fix & Perfect All Rough Sketches">
                 <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
                 <span>Auto-Fix</span>
               </button>
-              <button id="paint-clear-btn" class="p-2 rounded-lg text-slate-500 hover:text-red-600 hover:bg-red-50 transition-colors" title="Clear Canvas">
+              <button id="paint-clear-btn" class="p-2 rounded-lg text-slate-400 hover:text-red-400 hover:bg-red-950/40 transition-colors" title="Clear Canvas">
                 <i data-lucide="trash-2" class="w-4 h-4"></i>
               </button>
-              <button id="paint-export-btn" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-slate-800 text-white text-xs font-semibold hover:bg-slate-900 transition-colors shadow-sm" title="Download Drawing">
+              <button id="paint-export-btn" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-slate-800 text-white text-xs font-semibold hover:bg-slate-700 transition-colors shadow-sm" title="Download Drawing">
                 <i data-lucide="download" class="w-3.5 h-3.5"></i>
                 <span class="hidden sm:inline">Export</span>
               </button>
@@ -811,7 +798,7 @@ CREATE TABLE hackathons (
         </div>
 
         <!-- Canvas Drawing Viewport -->
-        <div class="relative w-full h-[540px] bg-slate-50 overflow-hidden cursor-crosshair">
+        <div class="relative w-full h-[540px] bg-[#090e17] overflow-hidden cursor-crosshair">
           
           <!-- Floating Status Notification Toast -->
           <div id="paint-status-badge" class="absolute top-4 left-1/2 -translate-x-1/2 px-4 py-1.5 rounded-full bg-slate-900/90 text-cyan-400 border border-cyan-500/30 text-xs font-mono font-bold shadow-xl transition-all duration-300 opacity-0 pointer-events-none z-20 flex items-center gap-2">
@@ -819,19 +806,19 @@ CREATE TABLE hackathons (
           </div>
 
           <!-- Pie Chart Live Figures & Percentages Editor Modal -->
-          <div id="paint-pie-editor-modal" class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm z-30 flex items-center justify-center p-4 hidden">
-            <div class="bg-white rounded-2xl shadow-2xl border border-slate-200 max-w-md w-full p-6 animate-scale-in">
-              <div class="flex items-center justify-between pb-4 mb-4 border-b border-slate-100">
+          <div id="paint-pie-editor-modal" class="absolute inset-0 bg-slate-950/80 backdrop-blur-md z-30 flex items-center justify-center p-4 hidden">
+            <div class="bg-slate-900 rounded-2xl shadow-2xl border border-slate-700 max-w-md w-full p-6 animate-scale-in">
+              <div class="flex items-center justify-between pb-4 mb-4 border-b border-slate-800">
                 <div class="flex items-center gap-2">
-                  <div class="w-8 h-8 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center font-bold">
+                  <div class="w-8 h-8 rounded-lg bg-amber-950 text-amber-400 border border-amber-500/30 flex items-center justify-center font-bold">
                     <i data-lucide="pie-chart" class="w-4 h-4"></i>
                   </div>
                   <div>
-                    <h4 class="font-bold text-slate-900 text-base font-heading">Edit Pie Figures & Slices</h4>
-                    <span id="paint-pie-total-display" class="text-[11px] font-mono text-slate-500">Total: 100%</span>
+                    <h4 class="font-bold text-white text-base font-heading">Edit Pie Figures & Slices</h4>
+                    <span id="paint-pie-total-display" class="text-[11px] font-mono text-slate-400">Total: 100%</span>
                   </div>
                 </div>
-                <button id="paint-pie-close-btn" class="p-1 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100">
+                <button id="paint-pie-close-btn" class="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800">
                   <i data-lucide="x" class="w-5 h-5"></i>
                 </button>
               </div>
@@ -842,12 +829,12 @@ CREATE TABLE hackathons (
               </div>
 
               <!-- Action Buttons -->
-              <div class="mt-5 pt-4 border-t border-slate-100 flex items-center justify-between gap-3">
-                <button id="paint-pie-add-slice-btn" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold transition-colors">
+              <div class="mt-5 pt-4 border-t border-slate-800 flex items-center justify-between gap-3">
+                <button id="paint-pie-add-slice-btn" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold transition-colors">
                   <i data-lucide="plus" class="w-3.5 h-3.5"></i>
                   <span>Add Slice</span>
                 </button>
-                <button id="paint-pie-apply-btn" class="inline-flex items-center gap-1.5 px-5 py-2 rounded-xl bg-gradient-to-r from-brand-blue to-cyan-500 text-white text-xs font-bold shadow-md hover:brightness-110 active:scale-95 transition-all">
+                <button id="paint-pie-apply-btn" class="inline-flex items-center gap-1.5 px-5 py-2 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-white text-xs font-bold shadow-md hover:brightness-110 active:scale-95 transition-all">
                   <i data-lucide="check" class="w-4 h-4"></i>
                   <span>Apply & Recalculate</span>
                 </button>
@@ -859,11 +846,11 @@ CREATE TABLE hackathons (
         </div>
 
         <!-- Canvas Footer Live HUD & Instructions -->
-        <div class="p-3 bg-slate-100/90 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-slate-600 font-mono">
-          <div id="paint-hud-coords" class="font-semibold text-slate-700">
+        <div class="p-3 bg-slate-900/90 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-slate-400 font-mono">
+          <div id="paint-hud-coords" class="font-semibold text-cyan-400">
             📍 Cursor: Canvas Viewport Ready
           </div>
-          <span class="text-slate-500 hidden md:inline">Click any Pie Chart to edit figures • Drag to draw X & Y axes or graphs</span>
+          <span class="text-slate-400 hidden md:inline">Click any Pie Chart to edit figures • Drag to draw X & Y axes or graphs</span>
         </div>
 
       </div>
@@ -986,48 +973,44 @@ CREATE TABLE hackathons (
   </section>
 
   <!-- =========================================================================
-       SECTION 7 (LIGHT THEME): 3D PARTICLE VECTOR FIELD & MEDIAPIPE GESTURE STUDIO
+       SECTION 7 (DARK THEME): 3D PARTICLE VECTOR FIELD & MEDIAPIPE GESTURE STUDIO
        (GPU-Accelerated Three.js InstancedMesh with 6,000+ Data Points & Webcam Hand Tracking)
        ========================================================================= -->
-  <section id="vector-field-studio" class="relative z-20 py-24 px-6 bg-[#FAFAFC]">
+  <section id="vector-field-studio" class="relative z-20 py-24 px-6">
     
-    <!-- Light Mesh Glow Blobs -->
-    <div class="mesh-blob blob-blue" style="top: 15%; right: -5%;"></div>
-    <div class="mesh-blob blob-emerald" style="bottom: 10%; left: -5%;"></div>
-
     <div class="max-w-[1400px] mx-auto relative z-10">
       
       <!-- Section Header -->
       <div class="text-center max-w-3xl mx-auto mb-12 fade-in-up">
-        <div class="canva-pill pill-cyan mb-3">
-          <i data-lucide="hand" class="w-4 h-4 text-brand-blue"></i>
+        <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-cyan-950/70 border border-cyan-500/30 text-cyan-400 text-xs font-mono font-bold tracking-widest uppercase mb-4 shadow-[0_0_15px_rgba(6,182,212,0.2)]">
+          <i data-lucide="hand" class="w-4 h-4 text-cyan-400"></i>
           <span>GPU InstancedMesh // MediaPipe Gesture Tracking</span>
         </div>
-        <h2 class="text-3xl md:text-5xl lg:text-6xl font-extrabold text-brand-navy tracking-tight font-heading">
+        <h2 class="text-3xl md:text-5xl lg:text-6xl font-extrabold text-white tracking-tight font-heading">
           3D PARTICLE VECTOR FIELD
         </h2>
-        <p class="text-slate-600 text-sm md:text-base mt-3 max-w-2xl mx-auto">
+        <p class="text-slate-400 text-sm md:text-base mt-3 max-w-2xl mx-auto">
           6,000+ GPU-accelerated data embedding points in a dynamic 3D vector space. Morph between high-dimensional topological manifolds using your webcam hand gestures or interactive presets!
         </p>
 
         <!-- Gesture Recognition Cheat Sheet Pills -->
         <div class="flex flex-wrap items-center justify-center gap-2 mt-6">
-          <span class="px-2.5 py-1 rounded-full bg-slate-100 border border-slate-200 text-[11px] font-mono font-semibold text-slate-700">
+          <span class="px-2.5 py-1 rounded-full bg-slate-900 border border-slate-700 text-[11px] font-mono font-semibold text-slate-300">
             ☝️ 1 Finger: Hypersphere
           </span>
-          <span class="px-2.5 py-1 rounded-full bg-slate-100 border border-slate-200 text-[11px] font-mono font-semibold text-slate-700">
+          <span class="px-2.5 py-1 rounded-full bg-slate-900 border border-slate-700 text-[11px] font-mono font-semibold text-slate-300">
             ✌️ 2 Fingers: Double Helix
           </span>
-          <span class="px-2.5 py-1 rounded-full bg-slate-100 border border-slate-200 text-[11px] font-mono font-semibold text-slate-700">
+          <span class="px-2.5 py-1 rounded-full bg-slate-900 border border-slate-700 text-[11px] font-mono font-semibold text-slate-300">
             🤟 3 Fingers: Torus 4D
           </span>
-          <span class="px-2.5 py-1 rounded-full bg-slate-100 border border-slate-200 text-[11px] font-mono font-semibold text-slate-700">
+          <span class="px-2.5 py-1 rounded-full bg-slate-900 border border-slate-700 text-[11px] font-mono font-semibold text-slate-300">
             🖖 4 Fingers: 3D Lattice
           </span>
-          <span class="px-2.5 py-1 rounded-full bg-slate-100 border border-slate-200 text-[11px] font-mono font-semibold text-slate-700">
+          <span class="px-2.5 py-1 rounded-full bg-slate-900 border border-slate-700 text-[11px] font-mono font-semibold text-slate-300">
             🖐️ 5 Fingers: Flowing Wave
           </span>
-          <span class="px-2.5 py-1 rounded-full bg-slate-100 border border-slate-200 text-[11px] font-mono font-semibold text-slate-700">
+          <span class="px-2.5 py-1 rounded-full bg-slate-900 border border-slate-700 text-[11px] font-mono font-semibold text-slate-300">
             ✊ Fist: Supernova
           </span>
         </div>
@@ -1064,8 +1047,8 @@ CREATE TABLE hackathons (
 
           <!-- Webcam Gesture Tracking Toggle -->
           <div class="flex items-center gap-2">
-            <button id="vector-webcam-toggle-btn" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-white border border-slate-300 text-slate-700 text-xs font-bold shadow-sm hover:border-brand-blue hover:text-brand-blue active:scale-95 transition-all">
-              <i data-lucide="video" class="w-4 h-4 text-brand-blue"></i>
+            <button id="vector-webcam-toggle-btn" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-200 text-xs font-bold shadow-sm hover:border-cyan-400 hover:text-cyan-400 active:scale-95 transition-all">
+              <i data-lucide="video" class="w-4 h-4 text-cyan-400"></i>
               <span>Enable Webcam Gestures</span>
             </button>
           </div>
@@ -1073,7 +1056,7 @@ CREATE TABLE hackathons (
         </div>
 
         <!-- WebGL Canvas Viewport with PiP Webcam -->
-        <div class="relative w-full h-[560px] bg-[#fafbfc] overflow-hidden cursor-grab active:cursor-grabbing">
+        <div class="relative w-full h-[560px] bg-[#040914] overflow-hidden cursor-grab active:cursor-grabbing">
           
           <!-- Floating Gesture Morphing Status Badge -->
           <div id="vector-gesture-badge" class="absolute top-4 left-1/2 -translate-x-1/2 px-4 py-1.5 rounded-full bg-slate-900/90 text-cyan-400 border border-cyan-500/30 text-xs font-mono font-bold shadow-xl transition-all duration-300 opacity-0 pointer-events-none z-20 flex items-center gap-2">
@@ -1081,9 +1064,9 @@ CREATE TABLE hackathons (
           </div>
 
           <!-- Picture-in-Picture Webcam HUD Preview (Hidden by default until user enables camera) -->
-          <div id="vector-webcam-pip" class="absolute bottom-4 right-4 z-20 p-2 rounded-2xl bg-white/90 backdrop-blur-md border border-slate-300 shadow-2xl hidden">
+          <div id="vector-webcam-pip" class="absolute bottom-4 right-4 z-20 p-2 rounded-2xl bg-slate-900/90 backdrop-blur-md border border-slate-700 shadow-2xl hidden">
             <div class="flex items-center justify-between gap-2 mb-1.5 px-1">
-              <span class="text-[10px] font-mono font-bold text-slate-600 flex items-center gap-1">
+              <span class="text-[10px] font-mono font-bold text-slate-400 flex items-center gap-1">
                 <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
                 <span>HAND TRACKER</span>
               </span>
@@ -1099,9 +1082,9 @@ CREATE TABLE hackathons (
         </div>
 
         <!-- Canvas Footer HUD -->
-        <div class="p-3 bg-slate-100/90 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-slate-600 font-mono">
-          <span class="flex items-center gap-1.5 text-brand-blue font-semibold">
-            <i data-lucide="sparkles" class="w-3.5 h-3.5 text-brand-cyan"></i>
+        <div class="p-3 bg-slate-900/90 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-slate-400 font-mono">
+          <span class="flex items-center gap-1.5 text-cyan-400 font-semibold">
+            <i data-lucide="sparkles" class="w-3.5 h-3.5 text-cyan-400"></i>
             <span>6,000+ GPU Instanced Particles • Mouse Orbit Drag & Wheel Zoom Active</span>
           </span>
           <span class="text-slate-500">THREE.JS INSTANCEDMESH ENGINE</span>
@@ -1460,12 +1443,12 @@ CREATE TABLE hackathons (
   </section>
 
   <!-- Modern Clean Minimalist Footer (Canva Harmony) -->
-  <footer class="border-t border-slate-200 bg-white py-8">
-    <div class="max-w-6xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-600">
+  <footer class="border-t border-slate-800 bg-[#030712] py-8">
+    <div class="max-w-6xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-400">
       <div class="flex items-center gap-2">
         <img src="assets/images/club_logo.jpg" alt="Logo" class="w-5 h-5 rounded-full object-cover">
-        <span class="font-semibold text-brand-navy">DATA ANALYTICS CLUB</span>
-        <span>• IMSUCC Ghaziabad</span>
+        <span class="font-semibold text-white">DATA ANALYTICS CLUB</span>
+        <span class="text-cyan-400">• IMSUCC Ghaziabad</span>
       </div>
       <div>
         <span>Academic & Industry Research Visual Dashboard • © 2026</span>
