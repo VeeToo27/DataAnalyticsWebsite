@@ -1,0 +1,1494 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Data Analytics Club | IMSUCC Ghaziabad</title>
+  
+  <!-- Google Fonts: Plus Jakarta Sans & Outfit -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              navy: '#0A2540',
+              blue: '#1E60D0',
+              cyan: '#00A8E8',
+              amber: '#F59E0B',
+              orange: '#F97316',
+              emerald: '#10B981',
+            }
+          },
+          fontFamily: {
+            heading: ['Outfit', 'sans-serif'],
+            body: ['Plus Jakarta Sans', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- SheetJS (xlsx) for in-browser Excel & CSV drag-and-drop parsing -->
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+
+  <!-- Three.js CDN for 3D Vector Fields -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+  <!-- MediaPipe Camera Utils & Hands CDN for Gesture Tracking -->
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
+
+  <!-- Custom Stylesheet -->
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body class="bg-[#FAFAFC] text-brand-navy selection:bg-brand-blue/20 selection:text-brand-blue">
+
+  <!-- Ambient Light Mesh Gradient Blobs -->
+  <div class="mesh-blob blob-blue"></div>
+  <div class="mesh-blob blob-amber"></div>
+  <div class="mesh-blob blob-cyan"></div>
+
+  <!-- Minimalist Clean Navigation Bar -->
+  <nav class="navbar flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-xl bg-white p-1 shadow-sm border border-slate-200 flex items-center justify-center">
+        <img src="assets/images/club_logo.jpg" alt="Data Analytics Club Logo" class="w-full h-full object-contain rounded-lg">
+      </div>
+      <div>
+        <span class="font-heading font-extrabold text-sm md:text-base tracking-tight text-brand-navy block leading-none">DATA ANALYTICS CLUB</span>
+        <span class="text-[10px] md:text-xs text-brand-blue font-semibold tracking-wider uppercase">IMSUCC Ghaziabad</span>
+      </div>
+    </div>
+
+    <!-- Mobile & Desktop Scrollable Navigation Strip -->
+    <div class="mobile-nav-strip max-w-[60vw] md:max-w-none">
+      <a href="#about-section" class="ctrl-btn text-xs">
+        <i data-lucide="info" class="w-3.5 h-3.5 text-brand-cyan"></i>
+        <span>About</span>
+      </a>
+      <a href="#data-dashboard" class="ctrl-btn text-xs">
+        <i data-lucide="table" class="w-3.5 h-3.5 text-brand-emerald"></i>
+        <span>Excel</span>
+      </a>
+      <a href="#sql-studio" class="ctrl-btn text-xs">
+        <i data-lucide="database" class="w-3.5 h-3.5 text-brand-blue"></i>
+        <span>SQL</span>
+      </a>
+      <a href="#drawing-studio" class="ctrl-btn text-xs">
+        <i data-lucide="pen-tool" class="w-3.5 h-3.5 text-brand-cyan"></i>
+        <span>Draw</span>
+      </a>
+      <a href="#neural-studio" class="ctrl-btn text-xs">
+        <i data-lucide="network" class="w-3.5 h-3.5 text-brand-purple"></i>
+        <span>Neural</span>
+      </a>
+      <a href="#vector-field-studio" class="ctrl-btn text-xs">
+        <i data-lucide="globe" class="w-3.5 h-3.5 text-brand-cyan"></i>
+        <span>Vector 3D</span>
+      </a>
+      <a href="#ml-sandbox" class="ctrl-btn text-xs">
+        <i data-lucide="cpu" class="w-3.5 h-3.5 text-brand-emerald"></i>
+        <span>ML Sandbox</span>
+      </a>
+      <button id="replay-intro-btn" class="ctrl-btn" title="Reset and return to top">
+        <i data-lucide="rotate-ccw" class="w-3.5 h-3.5 text-brand-blue"></i>
+        <span>Reset</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- =========================================================================
+       HERO SECTION 1 (LIGHT THEME): 3D DATA PARTICLE TUNNEL & LOGO ASSEMBLY
+       ========================================================================= -->
+  <div id="intro-scroll-track" class="relative w-full h-[260vh]">
+    <div id="intro-sticky-container" class="sticky top-0 left-0 w-full h-screen overflow-hidden flex flex-col items-center justify-center">
+      
+      <!-- 3D WebGL / Canvas for Data Tunnel & Morphing Logo -->
+      <canvas id="logo-tunnel-canvas"></canvas>
+
+      <!-- Visual Glow Halo on Logo Convergence -->
+      <div class="logo-glow-ring"></div>
+
+      <!-- Overlay Title Revealed Gracefully on Convergence -->
+      <div class="intro-overlay mt-[340px] md:mt-[380px]">
+        <div class="intro-title-reveal text-center">
+          <h1 class="text-3xl md:text-5xl lg:text-6xl font-extrabold text-brand-navy tracking-tight leading-tight font-heading">
+            DATA ANALYTICS CLUB
+          </h1>
+          <p class="text-xs md:text-sm font-bold tracking-widest text-brand-blue uppercase mt-1">
+            IMSUCC GHAZIABAD
+          </p>
+        </div>
+      </div>
+
+      <!-- Scroll Down Indicator & Real-Time Prompt -->
+      <div id="scroll-cue" class="scroll-cue">
+        <span>Scroll Down To Form Logo</span>
+        <div class="scroll-mouse">
+          <div class="scroll-wheel"></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       SECTION 2 (DARK THEME): MINIMAL ABOUT & DATA ECOSYSTEM
+       (Clean Bento Grid: Objective, Leadership & Campus, Embedded Certifications & Contacts)
+       ========================================================================= -->
+  <section id="about-section" class="relative z-20 py-24 px-6">
+    
+    <!-- Dark Mesh Glow Blobs -->
+    <div class="dark-mesh-blob dark-blob-cyan" style="top: 20%; left: -5%;"></div>
+    <div class="dark-mesh-blob dark-blob-amber" style="bottom: 15%; right: -5%;"></div>
+
+    <div class="max-w-[1400px] mx-auto relative z-10">
+      
+      <!-- Section Header (Minimal) -->
+      <div class="text-center max-w-2xl mx-auto mb-16 fade-in-up">
+        <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-cyan-950/70 border border-cyan-500/30 text-cyan-400 text-xs font-mono font-bold tracking-widest uppercase mb-3">
+          <span class="w-2 h-2 rounded-full bg-cyan-400"></span>
+          <span>ABOUT THE CLUB</span>
+        </div>
+        <h2 class="text-3xl md:text-5xl font-extrabold text-white tracking-tight font-heading">
+          DATA ANALYTICS ECOSYSTEM
+        </h2>
+        <p class="text-slate-400 text-sm md:text-base mt-3">
+          Developing student capabilities in quantitative reasoning, statistical modeling & real-world analytics.
+        </p>
+      </div>
+
+      <!-- Minimal 3-Card Bento Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        
+        <!-- CARD 1: OBJECTIVE -->
+        <div class="chart-panel flex flex-col justify-between fade-in-up">
+          <div>
+            <div class="w-10 h-10 rounded-xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 flex items-center justify-center mb-5">
+              <i data-lucide="target" class="w-5 h-5"></i>
+            </div>
+            <span class="text-[11px] font-mono font-bold text-cyan-400 tracking-wider uppercase block mb-1">01 // CORE MISSION</span>
+            <h3 class="text-lg md:text-xl font-bold text-white mb-3 font-heading">
+              Quantitative Reasoning & Problem Solving
+            </h3>
+            <p class="cipher-text text-slate-300 text-sm leading-relaxed">
+              The Data Analytics Club is dedicated to developing student capabilities in quantitative reasoning, statistical modeling, data visualization, and real-world problem-solving. It bridges theoretical classroom knowledge with practical industry requirements.
+            </p>
+          </div>
+          <div class="mt-6 pt-4 border-t border-slate-800 flex items-center justify-between text-xs font-mono text-cyan-400">
+            <span>// OBJECTIVE</span>
+            <span>INDUSTRY READY</span>
+          </div>
+        </div>
+
+        <!-- CARD 2: STUDENT LEADERSHIP & PARENT CAMPUS -->
+        <div class="chart-panel flex flex-col justify-between fade-in-up" style="transition-delay: 100ms;">
+          <div>
+            <div class="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-400 flex items-center justify-center mb-5">
+              <i data-lucide="award" class="w-5 h-5"></i>
+            </div>
+            <span class="text-[11px] font-mono font-bold text-amber-400 tracking-wider uppercase block mb-1">02 // LEADERSHIP & CAMPUS</span>
+            <h3 class="text-lg md:text-xl font-bold text-white mb-3 font-heading">
+              Student Leadership & Institution
+            </h3>
+            
+            <div class="space-y-3 text-sm">
+              <div class="p-3 rounded-lg bg-slate-900/60 border border-slate-800">
+                <span class="text-[10px] font-mono text-amber-400 uppercase font-bold block">CLUB LEAD</span>
+                <p class="cipher-text text-white font-bold">Yash Srivastav</p>
+                <span class="text-xs text-slate-400">Student Representative & Club Lead</span>
+              </div>
+
+              <div class="p-3 rounded-lg bg-slate-900/60 border border-slate-800">
+                <span class="text-[10px] font-mono text-emerald-400 uppercase font-bold block">PARENT INSTITUTION</span>
+                <p class="cipher-text text-white font-bold">IMS Ghaziabad (University Courses Campus)</p>
+                <span class="text-xs text-slate-400">NH-09, Adhyatmik Nagar, Ghaziabad, UP, 201015</span>
+              </div>
+            </div>
+          </div>
+          <div class="mt-6 pt-4 border-t border-slate-800 flex items-center justify-between text-xs font-mono text-amber-400">
+            <span>// INSTITUTION</span>
+            <span>IMSUCC GHAZIABAD</span>
+          </div>
+        </div>
+
+        <!-- CARD 3: INDUSTRY CERTIFICATIONS -->
+        <div class="chart-panel flex flex-col justify-between fade-in-up" style="transition-delay: 200ms;">
+          <div>
+            <div class="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 flex items-center justify-center mb-5">
+              <i data-lucide="shield-check" class="w-5 h-5"></i>
+            </div>
+            <span class="text-[11px] font-mono font-bold text-emerald-400 tracking-wider uppercase block mb-1">03 // CURRICULUM PATHS</span>
+            <h3 class="text-lg md:text-xl font-bold text-white mb-3 font-heading">
+              Embedded Certifications
+            </h3>
+
+            <div class="space-y-2.5 text-xs text-slate-300">
+              <div class="p-2.5 rounded-lg bg-slate-900/60 border border-slate-800 flex items-start gap-2.5">
+                <span class="w-2 h-2 rounded-full bg-cyan-400 mt-1.5 shrink-0"></span>
+                <div>
+                  <strong class="text-white block font-sans">Coursera Platforms:</strong>
+                  <span>Certifications from Google, IBM, Meta, and Microsoft in Business Analytics and Data Science.</span>
+                </div>
+              </div>
+
+              <div class="p-2.5 rounded-lg bg-slate-900/60 border border-slate-800 flex items-start gap-2.5">
+                <span class="w-2 h-2 rounded-full bg-amber-400 mt-1.5 shrink-0"></span>
+                <div>
+                  <strong class="text-white block font-sans">NPTEL Certifications:</strong>
+                  <span>Advanced courses designed by IITs and IISc covering AI and Analytics.</span>
+                </div>
+              </div>
+
+              <div class="p-2.5 rounded-lg bg-slate-900/60 border border-slate-800 flex items-start gap-2.5">
+                <span class="w-2 h-2 rounded-full bg-emerald-400 mt-1.5 shrink-0"></span>
+                <div>
+                  <strong class="text-white block font-sans">Harvard ManageMentor:</strong>
+                  <span>Executive management & quantitative decision-making modules.</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="mt-6 pt-4 border-t border-slate-800 flex items-center justify-between text-xs font-mono text-emerald-400">
+            <span>// CREDENTIALS</span>
+            <span>GLOBAL STANDARDS</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Minimal Contact Strip -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 fade-in-up" style="transition-delay: 250ms;">
+        
+        <div class="chart-panel py-3.5 px-4 flex items-center gap-3">
+          <div class="w-8 h-8 rounded-lg bg-cyan-500/10 text-cyan-400 flex items-center justify-center shrink-0">
+            <i data-lucide="phone-call" class="w-4 h-4"></i>
+          </div>
+          <div>
+            <span class="text-[10px] font-mono text-slate-400 uppercase block">TOLL FREE</span>
+            <span class="cipher-text text-xs md:text-sm font-bold text-white font-mono">1800-102-1214</span>
+          </div>
+        </div>
+
+        <div class="chart-panel py-3.5 px-4 flex items-center gap-3">
+          <div class="w-8 h-8 rounded-lg bg-amber-500/10 text-amber-400 flex items-center justify-center shrink-0">
+            <i data-lucide="phone" class="w-4 h-4"></i>
+          </div>
+          <div>
+            <span class="text-[10px] font-mono text-slate-400 uppercase block">LANDLINE</span>
+            <span class="cipher-text text-xs md:text-sm font-bold text-white font-mono">0120-4980000</span>
+          </div>
+        </div>
+
+        <div class="chart-panel py-3.5 px-4 flex items-center gap-3">
+          <div class="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-400 flex items-center justify-center shrink-0">
+            <i data-lucide="mail" class="w-4 h-4"></i>
+          </div>
+          <div>
+            <span class="text-[10px] font-mono text-slate-400 uppercase block">EMAIL</span>
+            <a href="mailto:admission@imsuc.ac.in" class="cipher-text text-xs md:text-sm font-bold text-white hover:text-emerald-400 transition-colors truncate block max-w-[140px]">admission@imsuc.ac.in</a>
+          </div>
+        </div>
+
+        <div class="chart-panel py-3.5 px-4 flex items-center gap-3">
+          <div class="w-8 h-8 rounded-lg bg-blue-500/10 text-brand-blue flex items-center justify-center shrink-0">
+            <i data-lucide="globe" class="w-4 h-4"></i>
+          </div>
+          <div>
+            <span class="text-[10px] font-mono text-slate-400 uppercase block">WEB PORTAL</span>
+            <a href="https://www.imsuc.ac.in" target="_blank" rel="noopener noreferrer" class="cipher-text text-xs md:text-sm font-bold text-white hover:text-cyan-400 transition-colors">www.imsuc.ac.in</a>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       SECTION 3 (LIGHT THEME): INTERACTIVE MS EXCEL STUDIO & DYNAMIC CHARTS
+       (Drag & Drop Excel/CSV on Left, Reactive Animated Chart on Right)
+       ========================================================================= -->
+  <section id="data-dashboard" class="relative z-20 py-28 px-6">
+    
+    <!-- Light Mesh Glow Blobs -->
+    <div class="mesh-blob blob-blue" style="top: 15%; left: -5%;"></div>
+    <div class="mesh-blob blob-amber" style="bottom: 10%; right: -5%;"></div>
+
+    <div class="max-w-[1400px] mx-auto relative z-10">
+      
+      <!-- Section Header (Canva Light Style) -->
+      <div class="text-center max-w-4xl mx-auto mb-16 fade-in-up">
+        <div class="canva-pill pill-emerald mb-4">
+          <i data-lucide="file-spreadsheet" class="w-4 h-4"></i>
+          <span>Interactive Multi-Column Excel Studio // Drag & Drop Enabled</span>
+        </div>
+        <h2 class="text-3xl md:text-5xl lg:text-6xl font-extrabold text-brand-navy tracking-tight font-heading mt-2">
+          SPREADSHEET TO DYNAMIC VISUALS
+        </h2>
+        <p class="text-slate-600 text-sm md:text-base mt-4 max-w-2xl mx-auto">
+          Drag & drop your own Excel spreadsheet (<code class="bg-slate-100 px-1.5 py-0.5 rounded text-emerald-700 text-xs font-mono font-bold">.xlsx</code>, <code class="bg-slate-100 px-1.5 py-0.5 rounded text-emerald-700 text-xs font-mono font-bold">.csv</code>) or edit rows & columns below to watch the live animated charts!
+        </p>
+      </div>
+
+      <!-- 2-Column Studio Grid: Left Excel Spreadsheet (6 Cols) + Right Animated Chart (6 Cols) -->
+      <div class="grid grid-cols-1 xl:grid-cols-12 gap-8 items-start">
+        
+        <!-- LEFT COLUMN: MS EXCEL-STYLE SPREADSHEET TABLE (6 Cols) -->
+        <div class="xl:col-span-6 space-y-4 fade-in-up">
+          
+          <!-- Drag & Drop Dropzone Box -->
+          <div id="excel-dropzone" class="excel-dropzone group">
+            <input type="file" id="excel-file-input" class="hidden" accept=".xlsx, .xls, .csv">
+            <div class="flex items-center justify-center gap-3">
+              <div class="w-11 h-11 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center group-hover:scale-110 transition-transform shadow-sm">
+                <i data-lucide="upload-cloud" class="w-5 h-5"></i>
+              </div>
+              <div class="text-left">
+                <p id="excel-drop-label" class="text-xs md:text-sm font-semibold text-slate-700 leading-tight">
+                  <span class="text-emerald-600 font-bold">Click or drag & drop</span> your Excel / CSV file
+                </p>
+                <span class="text-[11px] text-slate-400">Supports massive multi-column .xlsx, .xls, .csv files</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Excel Table Container -->
+          <div class="excel-container">
+            
+            <!-- Excel Ribbon & Search/Filter Toolbar -->
+            <div class="excel-ribbon flex flex-col gap-2.5">
+              <div class="flex flex-wrap items-center justify-between gap-2">
+                <div class="flex items-center gap-2">
+                  <div class="w-6 h-6 rounded bg-emerald-600 flex items-center justify-center text-white font-bold text-xs shadow-sm">
+                    X
+                  </div>
+                  <span class="text-xs font-bold text-slate-800 tracking-wide">Data_Workbook.xlsx</span>
+                </div>
+
+                <!-- Search / Filter Box & Preset Selector -->
+                <div class="flex items-center gap-2">
+                  <input type="text" id="excel-search-input" placeholder="🔍 Filter rows..." class="bg-white text-slate-700 text-xs rounded-md border border-slate-300 px-2.5 py-1 outline-none focus:border-emerald-500 shadow-sm w-32 sm:w-40">
+                  <select id="excel-dataset-select" class="bg-white text-slate-700 text-xs rounded-md border border-slate-300 px-2 py-1 outline-none focus:border-emerald-500 shadow-sm">
+                    <option value="domains">Domain Registrations</option>
+                    <option value="growth">Quarterly Growth</option>
+                    <option value="tools">Tech Stack Usage</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- Formula Bar Strip -->
+              <div class="flex items-center gap-2 pt-1 border-t border-slate-200">
+                <div id="excel-name-box" class="excel-name-box">A1</div>
+                <div class="text-xs font-serif font-bold text-slate-500 italic">fx</div>
+                <input id="excel-formula-input" type="text" class="excel-formula-bar" value="=CELL(A1)" readonly>
+              </div>
+            </div>
+
+            <!-- Spreadsheet Grid Table Viewport (Expanded Height) -->
+            <div class="overflow-x-auto max-h-[540px] overflow-y-auto excel-scroll-viewport">
+              <table class="excel-table">
+                <thead id="excel-table-head">
+                  <!-- Dynamically rendered editable column headers -->
+                </thead>
+                <tbody id="excel-table-body">
+                  <!-- Dynamically populated rows -->
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Table Actions Bar: Single Row, 10 Rows Batch, Add Column, Export CSV, Reset -->
+            <div class="p-3 bg-slate-50 border-t border-slate-200 flex flex-wrap items-center justify-between gap-2">
+              <div class="flex flex-wrap items-center gap-1.5 md:gap-2">
+                <button id="excel-add-row-btn" class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-emerald-50 border border-emerald-300 text-emerald-700 text-xs font-bold hover:bg-emerald-100 transition-colors shadow-sm" title="Add 1 new row">
+                  <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+                  <span>Add Row</span>
+                </button>
+
+                <button id="excel-add-10-btn" class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-emerald-50 border border-emerald-300 text-emerald-700 text-xs font-bold hover:bg-emerald-100 transition-colors shadow-sm" title="Generate 10 rows for stress test">
+                  <i data-lucide="plus-circle" class="w-3.5 h-3.5"></i>
+                  <span>+10 Rows</span>
+                </button>
+
+                <button id="excel-add-col-btn" class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-blue-50 border border-blue-300 text-brand-blue text-xs font-bold hover:bg-blue-100 transition-colors shadow-sm" title="Add new metric column">
+                  <i data-lucide="columns" class="w-3.5 h-3.5"></i>
+                  <span>Add Col</span>
+                </button>
+
+                <button id="excel-export-csv-btn" class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-slate-100 border border-slate-300 text-slate-700 text-xs font-semibold hover:bg-slate-200 transition-colors shadow-sm" title="Download as CSV file">
+                  <i data-lucide="download" class="w-3.5 h-3.5"></i>
+                  <span>Export CSV</span>
+                </button>
+              </div>
+
+              <div class="flex items-center gap-1.5">
+                <button id="excel-clear-btn" class="inline-flex items-center gap-1 px-2 py-1.5 rounded-lg text-slate-500 hover:text-red-600 text-xs font-medium transition-colors" title="Clear all rows">
+                  <i data-lucide="trash" class="w-3 h-3"></i>
+                  <span>Clear</span>
+                </button>
+
+                <button id="excel-reset-btn" class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-white border border-slate-200 text-slate-600 text-xs font-medium hover:text-slate-900 transition-colors shadow-sm">
+                  <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
+                  <span>Reset</span>
+                </button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- RIGHT COLUMN: ANIMATED VISUAL CHART ENGINE (6 Cols) -->
+        <div class="xl:col-span-6 fade-in-up" style="transition-delay: 150ms;">
+          <div class="chart-display-container">
+            
+            <!-- Chart Header Controls (Type Switcher Tabs) -->
+            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
+              <div>
+                <span class="text-xs font-mono font-bold text-brand-blue tracking-wider uppercase block">REACTIVE GRAPH VISUALIZER</span>
+                <h3 class="text-xl md:text-2xl font-bold text-brand-navy font-heading">Interactive Chart Output</h3>
+              </div>
+
+              <!-- Chart Type Tabs: Bar Graph, Pie Chart, Line Graph -->
+              <div class="flex items-center gap-2 p-1.5 rounded-full bg-slate-100 border border-slate-200">
+                <button class="chart-type-tab active" data-chart-type="bar">
+                  <i data-lucide="bar-chart-2" class="w-4 h-4"></i>
+                  <span>Bar Graph</span>
+                </button>
+                <button class="chart-type-tab" data-chart-type="pie">
+                  <i data-lucide="pie-chart" class="w-4 h-4"></i>
+                  <span>Pie Chart</span>
+                </button>
+                <button class="chart-type-tab" data-chart-type="line">
+                  <i data-lucide="trending-up" class="w-4 h-4"></i>
+                  <span>Line Graph</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- KPI Metric Summary Bar -->
+            <div class="grid grid-cols-4 gap-3 md:gap-4 mb-6">
+              <div class="kpi-mini-card">
+                <span class="text-[11px] font-mono text-slate-500 uppercase tracking-wider block">TOTAL SUM</span>
+                <span id="kpi-total-val" class="text-base md:text-xl font-bold text-brand-navy font-mono">0</span>
+              </div>
+              <div class="kpi-mini-card">
+                <span class="text-[11px] font-mono text-slate-500 uppercase tracking-wider block">AVERAGE</span>
+                <span id="kpi-avg-val" class="text-base md:text-xl font-bold text-brand-blue font-mono">0</span>
+              </div>
+              <div class="kpi-mini-card">
+                <span class="text-[11px] font-mono text-slate-500 uppercase tracking-wider block">MAX PEAK</span>
+                <span id="kpi-max-val" class="text-base md:text-xl font-bold text-brand-amber font-mono">0</span>
+              </div>
+              <div class="kpi-mini-card">
+                <span class="text-[11px] font-mono text-slate-500 uppercase tracking-wider block">RECORDS</span>
+                <span id="kpi-count-val" class="text-base md:text-xl font-bold text-brand-emerald font-mono">0</span>
+              </div>
+            </div>
+
+            <!-- Interactive Large Canvas Container (520px Height) -->
+            <div class="relative w-full h-[520px] rounded-xl bg-white border border-slate-200 p-3 flex items-center justify-center overflow-hidden shadow-inner">
+              <canvas id="dashboard-chart-canvas" class="w-full h-full block"></canvas>
+            </div>
+
+            <!-- Chart Footer Note -->
+            <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500 font-mono">
+              <span class="flex items-center gap-1.5 text-brand-blue font-semibold">
+                <i data-lucide="zap" class="w-3.5 h-3.5 text-brand-blue"></i>
+                <span>High-Load Optimized // 2.2s Morph Transition</span>
+              </span>
+              <span>MULTI-SERIES SPREADSHEET BINDING</span>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       SECTION 4 (DARK THEME): SQL STUDIO & INTERACTIVE SCHEMA MINDMAP
+       (SQL Editor on Left with IntelliSense & Tab Palette, Particle ER Mindmap on Right)
+       ========================================================================= -->
+  <section id="sql-studio" class="relative z-20 py-28 px-6">
+    
+    <!-- Dark Mesh Glow Blobs -->
+    <div class="dark-mesh-blob dark-blob-cyan" style="top: 10%; right: -5%;"></div>
+    <div class="dark-mesh-blob dark-blob-amber" style="bottom: 10%; left: -5%;"></div>
+
+    <div class="max-w-[1400px] mx-auto relative z-10">
+      
+      <!-- Section Header -->
+      <div class="text-center max-w-3xl mx-auto mb-16 fade-in-up">
+        <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-cyan-950/70 border border-cyan-500/30 text-cyan-400 text-xs font-bold tracking-widest uppercase mb-4 shadow-[0_0_15px_rgba(0,168,232,0.2)]">
+          <span class="w-2 h-2 rounded-full bg-cyan-400 animate-ping"></span>
+          <span>Relational Schema Engine // Live DDL Visualizer</span>
+        </div>
+        <h2 class="text-3xl md:text-5xl lg:text-6xl font-extrabold text-white tracking-tight font-heading mt-2">
+          SQL STUDIO & SCHEMA MINDMAP
+        </h2>
+        <p class="text-slate-400 text-sm md:text-base mt-4 max-w-2xl mx-auto">
+          Execute SQL queries on the left to watch database tables materialize on the right through swirling particle formations. Press <kbd class="px-2 py-0.5 rounded bg-slate-800 text-cyan-400 border border-slate-700 text-xs font-mono font-bold">Tab</kbd> for all commands & snippets.
+        </p>
+      </div>
+
+      <!-- 2-Column Grid: Left SQL Editor + Right Visual Schema Mindmap -->
+      <div class="grid grid-cols-1 xl:grid-cols-12 gap-8 items-start">
+        
+        <!-- LEFT COLUMN: HIGH-TECH SQL CODE EDITOR (5 Cols) -->
+        <div class="xl:col-span-5 space-y-4 fade-in-up">
+          
+          <!-- Query Presets Bar -->
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="text-xs font-mono text-slate-400 mr-1">PRESETS:</span>
+            <button class="sql-preset-btn" data-preset="create-hackathons">
+              <i data-lucide="plus-circle" class="w-3 h-3 text-cyan-400"></i>
+              <span>+ Hackathons Table</span>
+            </button>
+            <button class="sql-preset-btn" data-preset="create-projects">
+              <i data-lucide="folder-plus" class="w-3 h-3 text-amber-400"></i>
+              <span>+ Research Projects</span>
+            </button>
+            <button class="sql-preset-btn" data-preset="join-query">
+              <i data-lucide="git-merge" class="w-3 h-3 text-emerald-400"></i>
+              <span>Join Query</span>
+            </button>
+          </div>
+
+          <!-- Code Window -->
+          <div id="sql-editor-container" class="sql-window relative">
+            
+            <!-- Window Header / Action Bar -->
+            <div class="sql-window-header flex items-center justify-between">
+              <div class="flex items-center gap-3">
+                <div class="flex items-center gap-1.5">
+                  <span class="w-3 h-3 rounded-full bg-red-500/80"></span>
+                  <span class="w-3 h-3 rounded-full bg-amber-500/80"></span>
+                  <span class="w-3 h-3 rounded-full bg-emerald-500/80"></span>
+                </div>
+                <div class="flex items-center gap-1.5 text-xs font-mono text-slate-300">
+                  <i data-lucide="database" class="w-3.5 h-3.5 text-cyan-400"></i>
+                  <span class="font-bold">schema_init.sql</span>
+                </div>
+              </div>
+
+              <!-- Run Query Button -->
+              <button id="sql-run-btn" class="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-lg bg-gradient-to-r from-cyan-500 to-blue-600 text-white text-xs font-bold font-mono tracking-wider hover:brightness-110 active:scale-95 transition-all shadow-[0_0_15px_rgba(0,168,232,0.4)]">
+                <i data-lucide="play" class="w-3.5 h-3.5 fill-current"></i>
+                <span>RUN SQL</span>
+                <span class="text-[10px] opacity-75 hidden sm:inline">[Ctrl+↵]</span>
+              </button>
+            </div>
+
+            <!-- Autocomplete IntelliSense Dropdown (Absolute Popover) -->
+            <div id="sql-autocomplete-dropdown" class="sql-autocomplete-dropdown hidden">
+              <!-- Dynamically populated suggestions -->
+            </div>
+
+            <!-- Code Input Textarea -->
+            <textarea id="sql-editor-textarea" class="sql-editor-textarea" spellcheck="false" placeholder="-- Type SQL command or press [Tab] for suggestions...
+CREATE TABLE hackathons (
+  hackathon_id INT PRIMARY KEY,
+  title VARCHAR(120) NOT NULL,
+  lead_mentor_id INT REFERENCES students(student_id),
+  prize_pool FLOAT,
+  event_date TIMESTAMP
+);"></textarea>
+
+            <!-- Console Output Terminal Bar -->
+            <div class="sql-console">
+              <div id="sql-console-output" class="text-cyan-400">
+                [System Ready] Type SQL commands and click <span class="text-white font-bold">RUN SQL</span> or press <span class="text-white font-bold">Tab</span> for command palette.
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Shortcuts Hint Bar -->
+          <div class="flex items-center justify-between text-[11px] font-mono text-slate-500 px-1">
+            <span class="flex items-center gap-1">
+              <kbd class="px-1.5 py-0.5 rounded bg-slate-900 border border-slate-800 text-cyan-400">Tab</kbd> All Commands
+            </span>
+            <span class="flex items-center gap-1">
+              <kbd class="px-1.5 py-0.5 rounded bg-slate-900 border border-slate-800 text-cyan-400">Ctrl + Enter</kbd> Run
+            </span>
+            <span class="flex items-center gap-1">
+              <kbd class="px-1.5 py-0.5 rounded bg-slate-900 border border-slate-800 text-cyan-400">Esc</kbd> Close Popup
+            </span>
+          </div>
+
+        </div>
+
+        <!-- RIGHT COLUMN: INTERACTIVE PARTICLE ER MINDMAP (7 Cols) -->
+        <div class="xl:col-span-7 fade-in-up" style="transition-delay: 150ms;">
+          <div class="sql-window p-4">
+            
+            <!-- Canvas Header -->
+            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-4 px-2">
+              <div>
+                <span class="text-xs font-mono font-bold text-cyan-400 tracking-wider uppercase block">LIVE RELATIONAL MINDMAP</span>
+                <h3 class="text-lg md:text-xl font-bold text-white font-heading">Database Entity Architecture</h3>
+              </div>
+
+              <div class="flex items-center gap-3 text-xs font-mono text-slate-400">
+                <span class="flex items-center gap-1.5">
+                  <span class="w-2.5 h-2.5 rounded-full bg-amber-400 shadow-[0_0_8px_rgba(245,158,11,0.6)]"></span>
+                  <span>PK (Primary)</span>
+                </span>
+                <span class="flex items-center gap-1.5">
+                  <span class="w-2.5 h-2.5 rounded-full bg-cyan-400 shadow-[0_0_8px_rgba(56,189,248,0.6)]"></span>
+                  <span>FK (Foreign)</span>
+                </span>
+                <span class="flex items-center gap-1.5 text-slate-500">
+                  <i data-lucide="move" class="w-3.5 h-3.5 text-slate-400"></i>
+                  <span>Drag to reposition</span>
+                </span>
+              </div>
+            </div>
+
+            <!-- Canvas Container -->
+            <div class="relative w-full h-[540px] rounded-xl bg-[#02050E] border border-cyan-500/20 overflow-hidden shadow-inner flex items-center justify-center">
+              <canvas id="sql-mindmap-canvas" class="w-full h-full block cursor-grab active:cursor-grabbing"></canvas>
+            </div>
+
+            <!-- Mindmap Legend Footer -->
+            <div class="mt-3 pt-2.5 border-t border-slate-800/80 flex items-center justify-between text-xs text-slate-400 font-mono">
+              <span class="flex items-center gap-1.5 text-cyan-400">
+                <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
+                <span>Particle Materialization Engine // Dynamic Schema Binding</span>
+              </span>
+              <span class="text-slate-500">CANVAS 2D PHYSICS</span>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       SECTION 5 (LIGHT THEME): INTERACTIVE MS PAINT-STYLE DRAWING STUDIO
+       (Freehand Mouse Drawing + AI Smart Chart Auto-Fix & Snapping Engine)
+       ========================================================================= -->
+  <section id="drawing-studio" class="relative z-20 py-24 px-6 bg-[#FAFAFC]">
+    
+    <!-- Light Mesh Glow Blobs -->
+    <div class="mesh-blob blob-cyan" style="top: 10%; right: -5%;"></div>
+    <div class="mesh-blob blob-amber" style="bottom: 10%; left: -5%;"></div>
+
+    <div class="max-w-[1400px] mx-auto relative z-10">
+      
+      <!-- Section Header -->
+      <div class="text-center max-w-3xl mx-auto mb-12 fade-in-up">
+        <div class="canva-pill pill-cyan mb-3">
+          <i data-lucide="pen-tool" class="w-4 h-4"></i>
+          <span>Interactive Paint Studio // Accurate Axis Calibration</span>
+        </div>
+        <h2 class="text-3xl md:text-5xl lg:text-6xl font-extrabold text-brand-navy tracking-tight font-heading">
+          DRAW & AUTO-PERFECT GRAPHS
+        </h2>
+        <p class="text-slate-600 text-sm md:text-base mt-3 max-w-2xl mx-auto">
+          Draw accurate X & Y axes with custom scales, or sketch rough bar charts, spline lines, and donut charts. The animation auto-detects, auto-calibrates, and snaps your drawings into mathematically aligned graphs!
+        </p>
+
+        <!-- Quick Stencil Presets -->
+        <div class="flex flex-wrap items-center justify-center gap-2 mt-6">
+          <span class="text-xs font-mono text-slate-400 font-bold uppercase mr-1">QUICK STENCILS:</span>
+          <button id="paint-stencil-axis-btn" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white border border-slate-300 text-slate-700 text-xs font-semibold hover:border-brand-blue hover:text-brand-blue transition-all shadow-sm">
+            <i data-lucide="ruler" class="w-3.5 h-3.5 text-brand-blue"></i>
+            <span>+ Calibrated Axis</span>
+          </button>
+          <button id="paint-stencil-trend-btn" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white border border-slate-300 text-slate-700 text-xs font-semibold hover:border-amber-500 hover:text-amber-600 transition-all shadow-sm">
+            <i data-lucide="trending-up" class="w-3.5 h-3.5 text-amber-500"></i>
+            <span>+ Linear Trendline</span>
+          </button>
+          <button id="paint-stencil-stat-btn" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white border border-slate-300 text-slate-700 text-xs font-semibold hover:border-emerald-500 hover:text-emerald-600 transition-all shadow-sm">
+            <i data-lucide="tag" class="w-3.5 h-3.5 text-emerald-500"></i>
+            <span>+ Stat Callout</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Paint Studio Container Window -->
+      <div class="paint-window max-w-6xl mx-auto fade-in-up">
+        
+        <!-- MS Paint Floating Action Toolbar -->
+        <div class="paint-toolbar flex flex-wrap items-center justify-between gap-4">
+          
+          <!-- Tool Selection Pills -->
+          <div class="flex flex-wrap items-center gap-1.5 sm:gap-2">
+            <button class="paint-tool-btn active" data-tool="axis" title="Draw Calibrated X & Y Axes">
+              <i data-lucide="ruler" class="w-4 h-4"></i>
+              <span>X/Y Axes</span>
+            </button>
+            <button class="paint-tool-btn" data-tool="bar" title="Draw Bar Graph">
+              <i data-lucide="bar-chart-2" class="w-4 h-4"></i>
+              <span>Bar</span>
+            </button>
+            <button class="paint-tool-btn" data-tool="line" title="Draw Spline Line Graph">
+              <i data-lucide="trending-up" class="w-4 h-4"></i>
+              <span>Line</span>
+            </button>
+            <button class="paint-tool-btn" data-tool="pie" title="Draw Pie / Donut Chart">
+              <i data-lucide="pie-chart" class="w-4 h-4"></i>
+              <span>Pie</span>
+            </button>
+            <button class="paint-tool-btn" data-tool="text" title="Add Text Annotation">
+              <i data-lucide="type" class="w-4 h-4"></i>
+              <span>Text</span>
+            </button>
+            <button class="paint-tool-btn" data-tool="pen" title="Freehand Pen / Sketch">
+              <i data-lucide="edit-3" class="w-4 h-4"></i>
+              <span>Pen</span>
+            </button>
+            <button class="paint-tool-btn" data-tool="eraser" title="Eraser">
+              <i data-lucide="eraser" class="w-4 h-4"></i>
+              <span>Eraser</span>
+            </button>
+          </div>
+
+          <!-- Color Palette Picker -->
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-semibold text-slate-500 hidden sm:inline">Color:</span>
+            <div class="flex items-center gap-1.5">
+              <button class="paint-color-chip active" style="background-color: #1e60d0;" data-color="#1e60d0" title="Royal Blue"></button>
+              <button class="paint-color-chip" style="background-color: #00a8e8;" data-color="#00a8e8" title="Electric Cyan"></button>
+              <button class="paint-color-chip" style="background-color: #10b981;" data-color="#10b981" title="Emerald Green"></button>
+              <button class="paint-color-chip" style="background-color: #f59e0b;" data-color="#f59e0b" title="Amber Orange"></button>
+              <button class="paint-color-chip" style="background-color: #8b5cf6;" data-color="#8b5cf6" title="Purple"></button>
+              <button class="paint-color-chip" style="background-color: #f97316;" data-color="#f97316" title="Coral"></button>
+              <button class="paint-color-chip" style="background-color: #0f172a;" data-color="#0f172a" title="Midnight Navy"></button>
+            </div>
+          </div>
+
+          <!-- Size Slider & Action Tools -->
+          <div class="flex items-center gap-3">
+            <div class="hidden md:flex items-center gap-2">
+              <span class="text-xs font-semibold text-slate-500">Size:</span>
+              <input type="range" id="paint-size-slider" min="2" max="20" value="3" class="w-16 h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-brand-blue">
+              <span id="paint-size-val" class="text-xs font-mono font-bold text-slate-600 w-8">3px</span>
+            </div>
+
+            <div class="flex items-center gap-1.5">
+              <button id="paint-undo-btn" class="p-2 rounded-lg bg-slate-100 text-slate-700 hover:bg-slate-200 transition-colors shadow-sm" title="Undo (Ctrl+Z)">
+                <i data-lucide="undo" class="w-4 h-4"></i>
+              </button>
+              <button id="paint-redo-btn" class="p-2 rounded-lg bg-slate-100 text-slate-700 hover:bg-slate-200 transition-colors shadow-sm" title="Redo (Ctrl+Y)">
+                <i data-lucide="redo" class="w-4 h-4"></i>
+              </button>
+              <button id="paint-edit-pie-btn" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-50 border border-amber-300 text-amber-800 text-xs font-bold shadow-sm hover:bg-amber-100 active:scale-95 transition-all" title="Edit Pie Chart Figures & Percentages">
+                <i data-lucide="pie-chart" class="w-3.5 h-3.5 text-amber-600"></i>
+                <span>Edit Figures</span>
+              </button>
+              <button id="paint-autofix-btn" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gradient-to-r from-brand-blue to-cyan-500 text-white text-xs font-bold shadow-sm hover:brightness-110 active:scale-95 transition-all" title="Auto-Fix & Perfect All Rough Sketches">
+                <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
+                <span>Auto-Fix</span>
+              </button>
+              <button id="paint-clear-btn" class="p-2 rounded-lg text-slate-500 hover:text-red-600 hover:bg-red-50 transition-colors" title="Clear Canvas">
+                <i data-lucide="trash-2" class="w-4 h-4"></i>
+              </button>
+              <button id="paint-export-btn" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-slate-800 text-white text-xs font-semibold hover:bg-slate-900 transition-colors shadow-sm" title="Download Drawing">
+                <i data-lucide="download" class="w-3.5 h-3.5"></i>
+                <span class="hidden sm:inline">Export</span>
+              </button>
+            </div>
+
+          </div>
+
+        </div>
+
+        <!-- Canvas Drawing Viewport -->
+        <div class="relative w-full h-[540px] bg-slate-50 overflow-hidden cursor-crosshair">
+          
+          <!-- Floating Status Notification Toast -->
+          <div id="paint-status-badge" class="absolute top-4 left-1/2 -translate-x-1/2 px-4 py-1.5 rounded-full bg-slate-900/90 text-cyan-400 border border-cyan-500/30 text-xs font-mono font-bold shadow-xl transition-all duration-300 opacity-0 pointer-events-none z-20 flex items-center gap-2">
+            ✨ Auto-Fixed: Snapped to Calibrated Chart!
+          </div>
+
+          <!-- Pie Chart Live Figures & Percentages Editor Modal -->
+          <div id="paint-pie-editor-modal" class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm z-30 flex items-center justify-center p-4 hidden">
+            <div class="bg-white rounded-2xl shadow-2xl border border-slate-200 max-w-md w-full p-6 animate-scale-in">
+              <div class="flex items-center justify-between pb-4 mb-4 border-b border-slate-100">
+                <div class="flex items-center gap-2">
+                  <div class="w-8 h-8 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center font-bold">
+                    <i data-lucide="pie-chart" class="w-4 h-4"></i>
+                  </div>
+                  <div>
+                    <h4 class="font-bold text-slate-900 text-base font-heading">Edit Pie Figures & Slices</h4>
+                    <span id="paint-pie-total-display" class="text-[11px] font-mono text-slate-500">Total: 100%</span>
+                  </div>
+                </div>
+                <button id="paint-pie-close-btn" class="p-1 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100">
+                  <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+              </div>
+
+              <!-- Slices List Container -->
+              <div id="paint-pie-slices-container" class="space-y-2 max-h-60 overflow-y-auto pr-1">
+                <!-- Injected via JavaScript -->
+              </div>
+
+              <!-- Action Buttons -->
+              <div class="mt-5 pt-4 border-t border-slate-100 flex items-center justify-between gap-3">
+                <button id="paint-pie-add-slice-btn" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold transition-colors">
+                  <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+                  <span>Add Slice</span>
+                </button>
+                <button id="paint-pie-apply-btn" class="inline-flex items-center gap-1.5 px-5 py-2 rounded-xl bg-gradient-to-r from-brand-blue to-cyan-500 text-white text-xs font-bold shadow-md hover:brightness-110 active:scale-95 transition-all">
+                  <i data-lucide="check" class="w-4 h-4"></i>
+                  <span>Apply & Recalculate</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <canvas id="paint-canvas" class="w-full h-full block"></canvas>
+        </div>
+
+        <!-- Canvas Footer Live HUD & Instructions -->
+        <div class="p-3 bg-slate-100/90 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-slate-600 font-mono">
+          <div id="paint-hud-coords" class="font-semibold text-slate-700">
+            📍 Cursor: Canvas Viewport Ready
+          </div>
+          <span class="text-slate-500 hidden md:inline">Click any Pie Chart to edit figures • Drag to draw X & Y axes or graphs</span>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       SECTION 6 (DARK THEME): INTERACTIVE NEURAL NETWORKS MINDMAP & PHYSICS STUDIO
+       (Multi-Layer Deep Learning Graph, Drag Nodes, Action Potential Impulses, & Loss Convergence)
+       ========================================================================= -->
+  <section id="neural-studio" class="relative z-20 py-24 px-6 bg-[#030712]">
+    
+    <!-- Cyber Neon Glow Blobs -->
+    <div class="dark-mesh-blob dark-blob-cyan" style="top: 15%; left: -5%;"></div>
+    <div class="dark-mesh-blob dark-blob-amber" style="bottom: 10%; right: -5%;"></div>
+
+    <div class="max-w-[1400px] mx-auto relative z-10">
+      
+      <!-- Section Header -->
+      <div class="text-center max-w-3xl mx-auto mb-12 fade-in-up">
+        <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-cyan-950/70 border border-cyan-500/30 text-cyan-400 text-xs font-mono font-bold tracking-widest uppercase mb-3 shadow-[0_0_15px_rgba(0,168,232,0.2)]">
+          <span class="w-2 h-2 rounded-full bg-cyan-400 animate-ping"></span>
+          <span>NEURAL NETWORKS // TOPOLOGY MINDMAP</span>
+        </div>
+        <h2 class="text-3xl md:text-5xl lg:text-6xl font-extrabold text-white tracking-tight font-heading">
+          DEEP LEARNING NEURAL MINDMAP
+        </h2>
+        <p class="text-slate-400 text-sm md:text-base mt-3 max-w-2xl mx-auto">
+          Interact with deep neural layers, synaptic weights, and activation tensors. Drag neurons to stretch topology, click to fire action potential impulse waves, and watch real-time forward propagation!
+        </p>
+
+        <!-- Live Model Training Metrics HUD Bar -->
+        <div class="flex flex-wrap items-center justify-center gap-4 sm:gap-8 mt-6 p-3 rounded-2xl bg-slate-900/80 border border-slate-800 max-w-2xl mx-auto font-mono text-xs">
+          <div class="flex items-center gap-2">
+            <span class="text-slate-500">LOSS:</span>
+            <span id="neural-loss-val" class="text-emerald-400 font-bold">0.0482</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="text-slate-500">ACCURACY:</span>
+            <span id="neural-acc-val" class="text-cyan-400 font-bold">98.4%</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="text-slate-500">LEARNING RATE:</span>
+            <span class="text-amber-400 font-bold">η = 0.010</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="text-slate-500">OPTIMIZER:</span>
+            <span class="text-purple-400 font-bold">AdamW</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Neural Studio Container Window -->
+      <div class="neural-window max-w-6xl mx-auto fade-in-up">
+        
+        <!-- Neural Controls Action Toolbar -->
+        <div class="neural-toolbar flex flex-wrap items-center justify-between gap-4">
+          
+          <!-- Architecture Presets -->
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="text-xs font-mono text-slate-400 font-bold hidden sm:inline">ARCH:</span>
+            <button class="neural-preset-btn active" data-preset="mlp" title="Multi-Layer Perceptron (3-Layer Classification)">
+              <i data-lucide="brain" class="w-3.5 h-3.5"></i>
+              <span>Feedforward MLP</span>
+            </button>
+            <button class="neural-preset-btn" data-preset="autoencoder" title="Autoencoder Latent Bottleneck">
+              <i data-lucide="cpu" class="w-3.5 h-3.5"></i>
+              <span>Autoencoder</span>
+            </button>
+            <button class="neural-preset-btn" data-preset="transformer" title="Transformer Multi-Head Attention">
+              <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
+              <span>Transformer</span>
+            </button>
+            <button class="neural-preset-btn" data-preset="cnn" title="Convolutional Feature Maps">
+              <i data-lucide="layers" class="w-3.5 h-3.5"></i>
+              <span>CNN Maps</span>
+            </button>
+          </div>
+
+          <!-- Structure Modification & Fire Impulse -->
+          <div class="flex items-center gap-2">
+            <button id="neural-add-neuron-btn" class="p-2 rounded-lg bg-slate-900 border border-slate-800 text-cyan-400 hover:bg-slate-800 transition-colors text-xs font-bold" title="Add Neuron to Hidden Layer">
+              <i data-lucide="plus" class="w-4 h-4"></i>
+            </button>
+            <button id="neural-remove-neuron-btn" class="p-2 rounded-lg bg-slate-900 border border-slate-800 text-slate-400 hover:text-red-400 hover:bg-slate-800 transition-colors text-xs font-bold" title="Remove Neuron">
+              <i data-lucide="minus" class="w-4 h-4"></i>
+            </button>
+            <button id="neural-add-layer-btn" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-slate-300 hover:text-cyan-400 text-xs font-semibold transition-colors" title="Add Hidden Layer">
+              <i data-lucide="plus-circle" class="w-3.5 h-3.5 text-cyan-400"></i>
+              <span class="hidden sm:inline">Add Layer</span>
+            </button>
+            <button id="neural-fire-btn" class="neural-fire-btn" title="Fire Synaptic Action Potential Cascade">
+              <i data-lucide="zap" class="w-4 h-4"></i>
+              <span>Fire Impulse</span>
+            </button>
+            <button id="neural-reset-btn" class="p-2 rounded-lg text-slate-500 hover:text-slate-300 transition-colors" title="Reset Layout">
+              <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
+            </button>
+          </div>
+
+        </div>
+
+        <!-- Canvas Viewport -->
+        <div class="relative w-full h-[560px] bg-[#040812] overflow-hidden cursor-grab active:cursor-grabbing">
+          <canvas id="neural-canvas" class="w-full h-full block"></canvas>
+        </div>
+
+        <!-- Live HUD Inspector Footer -->
+        <div class="p-3 bg-slate-950 border-t border-slate-900 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs font-mono">
+          <div id="neural-hud-info" class="text-slate-300">
+            💡 Drag neurons to stretch topology • Click any neuron to fire synaptic action potentials
+          </div>
+          <span class="text-cyan-500 font-bold hidden md:inline">SPRING-DAMPER PHYSICS ENGINE</span>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       SECTION 7 (LIGHT THEME): 3D PARTICLE VECTOR FIELD & MEDIAPIPE GESTURE STUDIO
+       (GPU-Accelerated Three.js InstancedMesh with 6,000+ Data Points & Webcam Hand Tracking)
+       ========================================================================= -->
+  <section id="vector-field-studio" class="relative z-20 py-24 px-6 bg-[#FAFAFC]">
+    
+    <!-- Light Mesh Glow Blobs -->
+    <div class="mesh-blob blob-blue" style="top: 15%; right: -5%;"></div>
+    <div class="mesh-blob blob-emerald" style="bottom: 10%; left: -5%;"></div>
+
+    <div class="max-w-[1400px] mx-auto relative z-10">
+      
+      <!-- Section Header -->
+      <div class="text-center max-w-3xl mx-auto mb-12 fade-in-up">
+        <div class="canva-pill pill-cyan mb-3">
+          <i data-lucide="hand" class="w-4 h-4 text-brand-blue"></i>
+          <span>GPU InstancedMesh // MediaPipe Gesture Tracking</span>
+        </div>
+        <h2 class="text-3xl md:text-5xl lg:text-6xl font-extrabold text-brand-navy tracking-tight font-heading">
+          3D PARTICLE VECTOR FIELD
+        </h2>
+        <p class="text-slate-600 text-sm md:text-base mt-3 max-w-2xl mx-auto">
+          6,000+ GPU-accelerated data embedding points in a dynamic 3D vector space. Morph between high-dimensional topological manifolds using your webcam hand gestures or interactive presets!
+        </p>
+
+        <!-- Gesture Recognition Cheat Sheet Pills -->
+        <div class="flex flex-wrap items-center justify-center gap-2 mt-6">
+          <span class="px-2.5 py-1 rounded-full bg-slate-100 border border-slate-200 text-[11px] font-mono font-semibold text-slate-700">
+            ☝️ 1 Finger: Hypersphere
+          </span>
+          <span class="px-2.5 py-1 rounded-full bg-slate-100 border border-slate-200 text-[11px] font-mono font-semibold text-slate-700">
+            ✌️ 2 Fingers: Double Helix
+          </span>
+          <span class="px-2.5 py-1 rounded-full bg-slate-100 border border-slate-200 text-[11px] font-mono font-semibold text-slate-700">
+            🤟 3 Fingers: Torus 4D
+          </span>
+          <span class="px-2.5 py-1 rounded-full bg-slate-100 border border-slate-200 text-[11px] font-mono font-semibold text-slate-700">
+            🖖 4 Fingers: 3D Lattice
+          </span>
+          <span class="px-2.5 py-1 rounded-full bg-slate-100 border border-slate-200 text-[11px] font-mono font-semibold text-slate-700">
+            🖐️ 5 Fingers: Flowing Wave
+          </span>
+          <span class="px-2.5 py-1 rounded-full bg-slate-100 border border-slate-200 text-[11px] font-mono font-semibold text-slate-700">
+            ✊ Fist: Supernova
+          </span>
+        </div>
+      </div>
+
+      <!-- 3D Vector Studio Container Window -->
+      <div class="vector-window max-w-6xl mx-auto fade-in-up">
+        
+        <!-- Action Toolbar -->
+        <div class="vector-toolbar flex flex-wrap items-center justify-between gap-4">
+          
+          <!-- Formation Presets -->
+          <div class="flex flex-wrap items-center gap-1.5 sm:gap-2">
+            <span class="text-xs font-mono text-slate-400 font-bold hidden sm:inline">MANIFOLDS:</span>
+            <button class="vector-formation-btn active" data-formation="1" title="1 Finger: 3D Gaussian Hypersphere">
+              <span>1: Hypersphere</span>
+            </button>
+            <button class="vector-formation-btn" data-formation="2" title="2 Fingers: Double Helix DNA">
+              <span>2: Double Helix</span>
+            </button>
+            <button class="vector-formation-btn" data-formation="3" title="3 Fingers: 4D Torus Field">
+              <span>3: Torus Field</span>
+            </button>
+            <button class="vector-formation-btn" data-formation="4" title="4 Fingers: 3D Lattice Matrix">
+              <span>4: 3D Lattice</span>
+            </button>
+            <button class="vector-formation-btn" data-formation="5" title="5 Fingers: Vector Wave">
+              <span>5: Vector Wave</span>
+            </button>
+            <button class="vector-formation-btn" data-formation="0" title="Fist: Gravitational Supernova">
+              <span>0: Supernova</span>
+            </button>
+          </div>
+
+          <!-- Webcam Gesture Tracking Toggle -->
+          <div class="flex items-center gap-2">
+            <button id="vector-webcam-toggle-btn" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-white border border-slate-300 text-slate-700 text-xs font-bold shadow-sm hover:border-brand-blue hover:text-brand-blue active:scale-95 transition-all">
+              <i data-lucide="video" class="w-4 h-4 text-brand-blue"></i>
+              <span>Enable Webcam Gestures</span>
+            </button>
+          </div>
+
+        </div>
+
+        <!-- WebGL Canvas Viewport with PiP Webcam -->
+        <div class="relative w-full h-[560px] bg-[#fafbfc] overflow-hidden cursor-grab active:cursor-grabbing">
+          
+          <!-- Floating Gesture Morphing Status Badge -->
+          <div id="vector-gesture-badge" class="absolute top-4 left-1/2 -translate-x-1/2 px-4 py-1.5 rounded-full bg-slate-900/90 text-cyan-400 border border-cyan-500/30 text-xs font-mono font-bold shadow-xl transition-all duration-300 opacity-0 pointer-events-none z-20 flex items-center gap-2">
+            ✨ <strong>Hypersphere (1 Finger)</strong> [Initialized]
+          </div>
+
+          <!-- Picture-in-Picture Webcam HUD Preview (Hidden by default until user enables camera) -->
+          <div id="vector-webcam-pip" class="absolute bottom-4 right-4 z-20 p-2 rounded-2xl bg-white/90 backdrop-blur-md border border-slate-300 shadow-2xl hidden">
+            <div class="flex items-center justify-between gap-2 mb-1.5 px-1">
+              <span class="text-[10px] font-mono font-bold text-slate-600 flex items-center gap-1">
+                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                <span>HAND TRACKER</span>
+              </span>
+            </div>
+            <div class="relative w-36 h-28 rounded-lg overflow-hidden bg-slate-950">
+              <video id="vector-webcam-video" class="w-full h-full object-cover -scale-x-100" playsinline muted></video>
+              <canvas id="vector-webcam-overlay" class="absolute inset-0 w-full h-full object-cover -scale-x-100 pointer-events-none"></canvas>
+            </div>
+          </div>
+
+          <!-- Three.js Canvas Container -->
+          <div id="vector-field-canvas-container" class="w-full h-full block"></div>
+        </div>
+
+        <!-- Canvas Footer HUD -->
+        <div class="p-3 bg-slate-100/90 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-slate-600 font-mono">
+          <span class="flex items-center gap-1.5 text-brand-blue font-semibold">
+            <i data-lucide="sparkles" class="w-3.5 h-3.5 text-brand-cyan"></i>
+            <span>6,000+ GPU Instanced Particles • Mouse Orbit Drag & Wheel Zoom Active</span>
+          </span>
+          <span class="text-slate-500">THREE.JS INSTANCEDMESH ENGINE</span>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       SECTION 8 (DARK THEME): IN-BROWSER INTERACTIVE ML PREDICTION SANDBOX
+       (Live Regression/Classification Models, Decision Boundary Contour, Confusion Matrix, & Sliders)
+       ========================================================================= -->
+  <section id="ml-sandbox" class="relative z-20 py-24 px-6 bg-[#040812]">
+    
+    <!-- Dark Mesh Glow Blobs -->
+    <div class="dark-mesh-blob dark-blob-cyan" style="top: 15%; left: -5%;"></div>
+    <div class="dark-mesh-blob dark-blob-amber" style="bottom: 15%; right: -5%;"></div>
+
+    <div class="max-w-[1400px] mx-auto relative z-10">
+      
+      <!-- Section Header -->
+      <div class="text-center max-w-3xl mx-auto mb-12 fade-in-up">
+        <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-cyan-950/70 border border-cyan-500/30 text-cyan-400 text-xs font-mono font-bold tracking-widest uppercase mb-3 shadow-[0_0_15px_rgba(0,168,232,0.2)]">
+          <span class="w-2 h-2 rounded-full bg-cyan-400 animate-ping"></span>
+          <span>LIVE INFERENCE // PREDICTION PLAYGROUND</span>
+        </div>
+        <h2 class="text-3xl md:text-5xl lg:text-6xl font-extrabold text-white tracking-tight font-heading">
+          IN-BROWSER ML PREDICTION SANDBOX
+        </h2>
+        <p class="text-slate-400 text-sm md:text-base mt-3 max-w-2xl mx-auto">
+          Adjust live feature sliders or drop in custom datasets to see machine learning models predict academic performance & churn in real time with dynamic decision boundaries.
+        </p>
+
+        <!-- Model & Algorithm Switcher Controls -->
+        <div class="flex flex-wrap items-center justify-center gap-3 mt-6">
+          <div class="flex items-center gap-1.5 bg-slate-900/90 border border-slate-800 rounded-full p-1">
+            <button class="ml-model-btn active" data-model="student">
+              <i data-lucide="graduation-cap" class="w-3.5 h-3.5"></i>
+              <span>Student Performance</span>
+            </button>
+            <button class="ml-model-btn" data-model="churn">
+              <i data-lucide="user-x" class="w-3.5 h-3.5"></i>
+              <span>Customer Churn</span>
+            </button>
+          </div>
+
+        <!-- Model, Algorithm & Action Toolbar Controls -->
+        <div class="flex flex-wrap items-center justify-center gap-3 mt-6">
+          <div class="flex items-center gap-1.5 bg-slate-900/90 border border-slate-800 rounded-full p-1">
+            <button class="ml-model-btn active" data-model="student">
+              <i data-lucide="graduation-cap" class="w-3.5 h-3.5"></i>
+              <span>Student Performance</span>
+            </button>
+            <button class="ml-model-btn" data-model="churn">
+              <i data-lucide="user-x" class="w-3.5 h-3.5"></i>
+              <span>Customer Churn</span>
+            </button>
+          </div>
+
+          <div class="flex items-center gap-1.5 bg-slate-900/90 border border-slate-800 rounded-full p-1">
+            <button class="ml-algo-btn active" data-algo="random_forest">
+              <span>Random Forest</span>
+            </button>
+            <button class="ml-algo-btn" data-algo="ridge_regression">
+              <span>Ridge Regression</span>
+            </button>
+            <button class="ml-algo-btn" data-algo="svm">
+              <span>SVM Kernel</span>
+            </button>
+          </div>
+
+          <!-- Action Utility Toolbar -->
+          <div class="flex items-center gap-2">
+            <button id="ml-apply-plan-btn" class="inline-flex items-center gap-1 px-3.5 py-1.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-xs font-mono font-bold hover:bg-emerald-500/30 transition-colors shadow-sm" title="Auto-Apply Optimal Target Values">
+              <i data-lucide="sparkles" class="w-3.5 h-3.5 text-emerald-400"></i>
+              <span>⚡ Auto-Optimize Plan</span>
+            </button>
+            <button id="ml-pin-baseline-btn" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-slate-900 border border-slate-800 text-slate-300 text-xs font-mono font-semibold hover:bg-slate-800 transition-colors" title="Pin Current Parameters as Scenario A">
+              <i data-lucide="pin" class="w-3.5 h-3.5 text-cyan-400"></i>
+              <span>Pin Baseline</span>
+            </button>
+            <button id="ml-export-report-btn" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-slate-900 border border-slate-800 text-slate-300 text-xs font-mono font-semibold hover:bg-slate-800 transition-colors" title="Copy Full Prediction Report">
+              <i data-lucide="clipboard-copy" class="w-3.5 h-3.5 text-amber-400"></i>
+              <span>Copy Report</span>
+            </button>
+            <button id="ml-export-code-btn" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-slate-900 border border-slate-800 text-slate-300 text-xs font-mono font-semibold hover:bg-slate-800 transition-colors" title="Export Python / Scikit-Learn Script">
+              <i data-lucide="code-2" class="w-3.5 h-3.5 text-purple-400"></i>
+              <span>Python Code</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ML Sandbox 3-Column Grid -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-6 fade-in-up">
+        
+        <!-- COLUMN 1: LIVE FEATURE SLIDERS & DATASET DROPZONE (4 Cols) -->
+        <div class="ml-card lg:col-span-4 p-5 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between pb-3 mb-4 border-b border-slate-800">
+              <div class="flex items-center gap-2">
+                <i data-lucide="sliders" class="w-4 h-4 text-cyan-400"></i>
+                <h4 class="font-bold text-white text-sm font-heading">Input Feature Parameters</h4>
+              </div>
+              <span class="text-[10px] font-mono text-cyan-400 font-bold">REAL-TIME INFERENCE</span>
+            </div>
+
+            <!-- Student Performance Sliders -->
+            <div id="ml-sliders-student" class="space-y-4">
+              <div>
+                <div class="flex items-center justify-between text-xs mb-1.5 font-mono">
+                  <span class="text-slate-300">Study Hours / Week</span>
+                  <span id="ml-val-study" class="text-cyan-400 font-bold">9.5 hrs/wk</span>
+                </div>
+                <input type="range" id="ml-slider-study" min="1" max="20" step="0.5" value="9.5" class="ml-slider-input">
+              </div>
+
+              <div>
+                <div class="flex items-center justify-between text-xs mb-1.5 font-mono">
+                  <span class="text-slate-300">Class Attendance</span>
+                  <span id="ml-val-attendance" class="text-emerald-400 font-bold">88%</span>
+                </div>
+                <input type="range" id="ml-slider-attendance" min="50" max="100" step="1" value="88" class="ml-slider-input">
+              </div>
+
+              <div>
+                <div class="flex items-center justify-between text-xs mb-1.5 font-mono">
+                  <span class="text-slate-300">Prior Test Scores</span>
+                  <span id="ml-val-prior" class="text-purple-400 font-bold">84 pts</span>
+                </div>
+                <input type="range" id="ml-slider-prior" min="40" max="100" step="1" value="84" class="ml-slider-input">
+              </div>
+
+              <div>
+                <div class="flex items-center justify-between text-xs mb-1.5 font-mono">
+                  <span class="text-slate-300">Sleep Duration</span>
+                  <span id="ml-val-sleep" class="text-amber-400 font-bold">7.5 hrs</span>
+                </div>
+                <input type="range" id="ml-slider-sleep" min="4" max="10" step="0.5" value="7.5" class="ml-slider-input">
+              </div>
+
+              <div>
+                <div class="flex items-center justify-between text-xs mb-1.5 font-mono">
+                  <span class="text-slate-300">Assignments Completed</span>
+                  <span id="ml-val-assign" class="text-blue-400 font-bold">92%</span>
+                </div>
+                <input type="range" id="ml-slider-assign" min="40" max="100" step="1" value="92" class="ml-slider-input">
+              </div>
+            </div>
+
+            <!-- Customer Churn Sliders (Hidden by default) -->
+            <div id="ml-sliders-churn" class="space-y-4 hidden">
+              <div>
+                <div class="flex items-center justify-between text-xs mb-1.5 font-mono">
+                  <span class="text-slate-300">Monthly Usage</span>
+                  <span id="ml-val-usage" class="text-cyan-400 font-bold">140 hrs</span>
+                </div>
+                <input type="range" id="ml-slider-usage" min="10" max="300" step="5" value="140" class="ml-slider-input">
+              </div>
+
+              <div>
+                <div class="flex items-center justify-between text-xs mb-1.5 font-mono">
+                  <span class="text-slate-300">Support Tickets</span>
+                  <span id="ml-val-tickets" class="text-red-400 font-bold">1 tickets</span>
+                </div>
+                <input type="range" id="ml-slider-tickets" min="0" max="10" step="1" value="1" class="ml-slider-input">
+              </div>
+
+              <div>
+                <div class="flex items-center justify-between text-xs mb-1.5 font-mono">
+                  <span class="text-slate-300">Contract Length</span>
+                  <span id="ml-val-contract" class="text-emerald-400 font-bold">18 mo</span>
+                </div>
+                <input type="range" id="ml-slider-contract" min="1" max="36" step="1" value="18" class="ml-slider-input">
+              </div>
+
+              <div>
+                <div class="flex items-center justify-between text-xs mb-1.5 font-mono">
+                  <span class="text-slate-300">Payment Delays</span>
+                  <span id="ml-val-delays" class="text-amber-400 font-bold">0 delays</span>
+                </div>
+                <input type="range" id="ml-slider-delays" min="0" max="5" step="1" value="0" class="ml-slider-input">
+              </div>
+
+              <div>
+                <div class="flex items-center justify-between text-xs mb-1.5 font-mono">
+                  <span class="text-slate-300">NPS Satisfaction</span>
+                  <span id="ml-val-nps" class="text-purple-400 font-bold">9 / 10</span>
+                </div>
+                <input type="range" id="ml-slider-nps" min="1" max="10" step="1" value="9" class="ml-slider-input">
+              </div>
+            </div>
+          </div>
+
+          <!-- Dataset Drop Zone -->
+          <div id="ml-dataset-dropzone" class="mt-6 p-4 rounded-xl border border-dashed border-slate-700 bg-slate-950/60 text-center cursor-pointer hover:border-cyan-500 transition-colors">
+            <input type="file" id="ml-dataset-file-input" accept=".csv" class="hidden">
+            <i data-lucide="file-up" class="w-5 h-5 text-cyan-400 mx-auto mb-1"></i>
+            <span class="text-xs font-bold text-white block">Drop custom dataset CSV</span>
+            <span class="text-[10px] text-slate-400">Re-train model in browser</span>
+          </div>
+        </div>
+
+        <!-- COLUMN 2: LIVE PREDICTION GAUGE & CONFUSION MATRIX (4 Cols) -->
+        <div class="ml-card lg:col-span-4 p-5 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between pb-3 mb-4 border-b border-slate-800">
+              <div class="flex items-center gap-2">
+                <i data-lucide="gauge" class="w-4 h-4 text-emerald-400"></i>
+                <h4 class="font-bold text-white text-sm font-heading">Predicted Outcome</h4>
+              </div>
+              <span class="text-[10px] font-mono text-emerald-400 font-bold">INFERENCE ENGINE</span>
+            </div>
+
+            <!-- Gauge & Metric Card -->
+            <div class="flex flex-col items-center justify-center p-4 rounded-xl bg-slate-950/80 border border-slate-800/80 mb-5 text-center">
+              <div class="ml-gauge-wrap mb-2">
+                <div class="ml-gauge-arc"></div>
+                <div id="ml-gauge-needle" class="ml-needle"></div>
+              </div>
+
+              <span class="text-[10px] font-mono text-slate-400 uppercase tracking-widest mt-1">MODEL PREDICTION</span>
+              <div class="flex items-center gap-2 my-1">
+                <span id="ml-pred-score-val" class="text-3xl font-extrabold text-white font-heading">89.4</span>
+                <span id="ml-pred-grade-badge" class="px-2 py-0.5 rounded-full text-xs font-mono font-bold border">A+</span>
+              </div>
+              <span id="ml-pred-status-text" class="text-xs font-semibold text-emerald-400">High Academic Standing</span>
+              <span class="text-[11px] font-mono text-slate-500 mt-1">Confidence Interval: <span id="ml-pred-confidence-val" class="text-slate-300">96.4%</span></span>
+            </div>
+
+            <!-- Interactive Confusion Matrix -->
+            <div class="border-t border-slate-800 pt-4">
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-xs font-mono font-bold text-slate-300 uppercase">Confusion Matrix (2x2)</span>
+                <span class="text-[10px] font-mono text-purple-400">TEST SET (N=90)</span>
+              </div>
+
+              <div class="grid grid-cols-2 gap-2 text-center text-xs font-mono">
+                <div class="p-2.5 rounded-lg bg-emerald-950/50 border border-emerald-800/50">
+                  <span class="text-[10px] text-emerald-400 block font-bold">TRUE POSITIVE (TP)</span>
+                  <span id="ml-cm-tp" class="text-lg font-bold text-white">48</span>
+                </div>
+                <div class="p-2.5 rounded-lg bg-slate-900 border border-slate-800">
+                  <span class="text-[10px] text-red-400 block font-bold">FALSE POSITIVE (FP)</span>
+                  <span id="ml-cm-fp" class="text-lg font-bold text-slate-300">3</span>
+                </div>
+                <div class="p-2.5 rounded-lg bg-slate-900 border border-slate-800">
+                  <span class="text-[10px] text-red-400 block font-bold">FALSE NEGATIVE (FN)</span>
+                  <span id="ml-cm-fn" class="text-lg font-bold text-slate-300">4</span>
+                </div>
+                <div class="p-2.5 rounded-lg bg-cyan-950/50 border border-cyan-800/50">
+                  <span class="text-[10px] text-cyan-400 block font-bold">TRUE NEGATIVE (TN)</span>
+                  <span id="ml-cm-tn" class="text-lg font-bold text-white">35</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Performance Metric Pills -->
+          <div class="mt-4 pt-3 border-t border-slate-800 flex items-center justify-between text-[11px] font-mono text-slate-400">
+            <div>ACC: <strong id="ml-stat-accuracy" class="text-emerald-400">92.2%</strong></div>
+            <div>PREC: <strong id="ml-stat-precision" class="text-cyan-400">94.1%</strong></div>
+            <div>REC: <strong id="ml-stat-recall" class="text-purple-400">92.3%</strong></div>
+            <div>F1: <strong id="ml-stat-f1" class="text-amber-400">93.2%</strong></div>
+          </div>
+        </div>
+
+        <!-- COLUMN 3: DECISION BOUNDARY & FEATURE IMPORTANCE (4 Cols) -->
+        <div class="ml-card lg:col-span-4 p-5 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between pb-3 mb-3 border-b border-slate-800">
+              <div class="flex items-center gap-2">
+                <i data-lucide="scatter-chart" class="w-4 h-4 text-purple-400"></i>
+                <h4 class="font-bold text-white text-sm font-heading">2D Decision Boundary Contour</h4>
+              </div>
+              <span class="text-[10px] font-mono text-slate-400">HYPERPLANE</span>
+            </div>
+
+            <!-- 2D Canvas -->
+            <div class="relative w-full h-[190px] rounded-xl overflow-hidden border border-slate-800/80 mb-4 bg-slate-950">
+              <canvas id="ml-boundary-canvas" class="w-full h-full block"></canvas>
+            </div>
+
+            <!-- Feature Importance Heading -->
+            <div class="flex items-center justify-between pb-2 mb-2 border-b border-slate-800">
+              <span class="text-xs font-mono font-bold text-slate-300 uppercase">Feature Weight Importance</span>
+              <span class="text-[10px] font-mono text-slate-500">COEFFICIENTS (W)</span>
+            </div>
+
+            <!-- Feature Bars Canvas -->
+            <div class="relative w-full h-[120px] rounded-xl overflow-hidden border border-slate-800/80 bg-slate-950">
+              <canvas id="ml-feature-canvas" class="w-full h-full block"></canvas>
+            </div>
+          </div>
+
+          <div class="mt-3 pt-2 border-t border-slate-800 text-[11px] font-mono text-slate-500 text-center">
+            Pulsing dot shows active prediction point in 2D feature space
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ROW 2: ACTIONABLE AI PRESCRIPTIONS & SCENARIO A/B TESTING (ULTRA-USEFUL SUITE) -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 fade-in-up">
+        
+        <!-- Left: Actionable Prescriptions & Intervention Plan (7 Cols) -->
+        <div class="ml-card lg:col-span-7 p-5">
+          <div class="flex items-center justify-between pb-3 mb-3 border-b border-slate-800">
+            <div class="flex items-center gap-2">
+              <i data-lucide="lightbulb" class="w-4 h-4 text-amber-400"></i>
+              <h4 class="font-bold text-white text-sm font-heading">Actionable Optimization Prescriptions</h4>
+            </div>
+            <span class="text-[10px] font-mono text-emerald-400 font-bold">GOAL-SEEK ENGINE</span>
+          </div>
+
+          <p class="text-xs text-slate-400 mb-3">
+            Minimal-effort gradient interventions generated to reach peak academic standing / minimal churn:
+          </p>
+
+          <div id="ml-prescriptions-list" class="space-y-2.5 mb-3">
+            <!-- Injected via JavaScript -->
+          </div>
+        </div>
+
+        <!-- Right: Scenario A/B Testing Matrix (5 Cols) -->
+        <div class="ml-card lg:col-span-5 p-5 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between pb-3 mb-3 border-b border-slate-800">
+              <div class="flex items-center gap-2">
+                <i data-lucide="git-compare" class="w-4 h-4 text-cyan-400"></i>
+                <h4 class="font-bold text-white text-sm font-heading">Scenario A/B Testing Matrix</h4>
+              </div>
+              <span class="text-[10px] font-mono text-slate-400">SIMULATION</span>
+            </div>
+
+            <p class="text-xs text-slate-400 mb-3">
+              Compare your pinned baseline against proposed feature interventions:
+            </p>
+
+            <div id="ml-scenario-compare-container">
+              <!-- Injected via JavaScript -->
+            </div>
+          </div>
+
+          <div class="mt-4 pt-3 border-t border-slate-800 flex items-center justify-between text-xs text-slate-400 font-mono">
+            <span>Click 'Pin Baseline' above to freeze current state</span>
+            <span class="text-cyan-400">DELTA METRICS</span>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Modern Clean Minimalist Footer (Canva Harmony) -->
+  <footer class="border-t border-slate-200 bg-white py-8">
+    <div class="max-w-6xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-600">
+      <div class="flex items-center gap-2">
+        <img src="assets/images/club_logo.jpg" alt="Logo" class="w-5 h-5 rounded-full object-cover">
+        <span class="font-semibold text-brand-navy">DATA ANALYTICS CLUB</span>
+        <span>• IMSUCC Ghaziabad</span>
+      </div>
+      <div>
+        <span>Academic & Industry Research Visual Dashboard • © 2026</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Initialize Lucide Icons -->
+  <script>
+    lucide.createIcons();
+  </script>
+
+  <!-- Scripts -->
+  <script src="assets/js/cursor.js"></script>
+  <script src="assets/js/particles-bg.js"></script>
+  <script src="assets/js/logo-tunnel.js"></script>
+  <script src="assets/js/cipher-reveal.js"></script>
+  <script src="assets/js/dashboard.js"></script>
+  <script src="assets/js/sql-studio.js"></script>
+  <script src="assets/js/chart-paint.js"></script>
+  <script src="assets/js/neural-network.js"></script>
+  <script src="assets/js/vector-field.js"></script>
+  <script src="assets/js/ml-sandbox.js"></script>
+  <script src="assets/js/main.js"></script>
+</body>
+</html>
