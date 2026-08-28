@@ -105,6 +105,7 @@ class DataDashboardEngine {
     this.kpiStart = { total: 0, avg: 0, max: 0 };
     this.kpiTarget = { total: 0, avg: 0, max: 0 };
 
+    this.isMobile = (window.innerWidth < 768) || ('ontouchstart' in window);
     this.mouse = { x: -9999, y: -9999, isHover: false };
 
     this.init();
@@ -113,6 +114,7 @@ class DataDashboardEngine {
   init() {
     this.resizeCanvas();
     window.addEventListener('resize', () => {
+      this.isMobile = (window.innerWidth < 768) || ('ontouchstart' in window);
       this.resizeCanvas();
       this.drawChart();
     }, { passive: true });
@@ -126,7 +128,7 @@ class DataDashboardEngine {
 
   resizeCanvas() {
     const container = this.canvas.parentElement;
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const dpr = this.isMobile ? 1.0 : Math.min(window.devicePixelRatio || 1, 2);
     this.width = container.clientWidth || 650;
     this.height = Math.max(520, container.clientHeight || 520);
 
@@ -723,9 +725,11 @@ class DataDashboardEngine {
             });
           }
         }
+        this.drawChart();
+      } else if (!this.isMobile) {
+        this.drawChart();
       }
 
-      this.drawChart();
       requestAnimationFrame(loop);
     };
 
@@ -770,9 +774,9 @@ class DataDashboardEngine {
     });
     maxVal *= 1.15;
 
-    // Light Gridlines & Y-Axis
-    this.ctx.strokeStyle = '#f1f5f9';
-    this.ctx.lineWidth = 1.2;
+    // Dark Gridlines & Y-Axis
+    this.ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
+    this.ctx.lineWidth = 1.0;
     this.ctx.font = '11px Outfit, sans-serif';
     this.ctx.fillStyle = '#94a3b8';
     this.ctx.textAlign = 'right';
@@ -811,10 +815,10 @@ class DataDashboardEngine {
           this.mouse.y >= y && this.mouse.y <= padding.top + chartH
         );
 
-        // Bar Gradient
+        // Bar Gradient on Dark
         const grad = this.ctx.createLinearGradient(0, y, 0, padding.top + chartH);
         grad.addColorStop(0, col.color);
-        grad.addColorStop(1, '#f8fafc');
+        grad.addColorStop(1, 'rgba(15, 23, 42, 0.4)');
 
         this.ctx.fillStyle = grad;
         this.ctx.beginPath();
@@ -825,9 +829,9 @@ class DataDashboardEngine {
         this.ctx.fillStyle = col.color;
         this.ctx.fillRect(x, y, Math.max(2, individualBarW - 2), 2.5);
 
-        // Value Tag (Shown if low count or hovered)
+        // Value Tag
         if ((rowCount <= 12 && seriesCount <= 2) || isHover) {
-          this.ctx.fillStyle = isHover ? '#0284c7' : '#0f172a';
+          this.ctx.fillStyle = isHover ? '#38bdf8' : '#f8fafc';
           this.ctx.font = isHover ? 'bold 12px Outfit, sans-serif' : '11px Outfit, sans-serif';
           this.ctx.textAlign = 'center';
           this.ctx.fillText(Math.round(curVal), x + (individualBarW - 2) * 0.5, y - 8);
@@ -836,7 +840,7 @@ class DataDashboardEngine {
 
       // Bottom Row Name
       if (showLabels || r % labelStride === 0) {
-        this.ctx.fillStyle = '#334155';
+        this.ctx.fillStyle = '#94a3b8';
         this.ctx.font = '500 11px Outfit, sans-serif';
         this.ctx.textAlign = 'center';
         const shortLabel = row.label.length > 10 ? row.label.substring(0, 8) + '..' : row.label;
@@ -866,7 +870,6 @@ class DataDashboardEngine {
 
     const total = rawItems.reduce((acc, v) => acc + v.val, 0) || 1;
 
-    // If more than 8 rows, aggregate top 7 + "Other Remaining"
     let displaySlices = [];
     if (rawItems.length > 8) {
       const sorted = [...rawItems].sort((a, b) => b.val - a.val);
@@ -875,7 +878,7 @@ class DataDashboardEngine {
       displaySlices.push({
         label: `Other (${rawItems.length - 7} items)`,
         val: remainingVal,
-        color: '#94a3b8'
+        color: '#64748b'
       });
     } else {
       displaySlices = rawItems;
@@ -895,20 +898,20 @@ class DataDashboardEngine {
       this.ctx.closePath();
       this.ctx.fill();
 
-      this.ctx.strokeStyle = '#ffffff';
-      this.ctx.lineWidth = 3;
+      this.ctx.strokeStyle = '#0b132b';
+      this.ctx.lineWidth = 2.5;
       this.ctx.stroke();
 
       currentAngle = endAngle;
     }
 
     // Center Donut Hole
-    this.ctx.fillStyle = '#0f172a';
+    this.ctx.fillStyle = '#ffffff';
     this.ctx.font = 'bold 18px Outfit, sans-serif';
     this.ctx.textAlign = 'center';
     this.ctx.textBaseline = 'middle';
     this.ctx.fillText(Math.round(total).toLocaleString(), cx, cy - 8);
-    this.ctx.fillStyle = '#64748b';
+    this.ctx.fillStyle = '#38bdf8';
     this.ctx.font = '11px Outfit, sans-serif';
     this.ctx.fillText(primaryCol.name.toUpperCase().substring(0, 14), cx, cy + 14);
 
@@ -926,12 +929,12 @@ class DataDashboardEngine {
       this.ctx.arc(legendX, ly, 6, 0, Math.PI * 2);
       this.ctx.fill();
 
-      this.ctx.fillStyle = '#1e293b';
+      this.ctx.fillStyle = '#e2e8f0';
       this.ctx.font = '500 12px Outfit, sans-serif';
       const shortLabel = slice.label.length > 15 ? slice.label.substring(0, 13) + '..' : slice.label;
       this.ctx.fillText(shortLabel, legendX + 16, ly + 4);
 
-      this.ctx.fillStyle = '#0284c7';
+      this.ctx.fillStyle = '#38bdf8';
       this.ctx.font = 'bold 12px Outfit, sans-serif';
       this.ctx.fillText(`${pct}%`, legendX + 130, ly + 4);
     });
@@ -956,8 +959,8 @@ class DataDashboardEngine {
     maxVal *= 1.15;
 
     // Gridlines
-    this.ctx.strokeStyle = '#f1f5f9';
-    this.ctx.lineWidth = 1.2;
+    this.ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
+    this.ctx.lineWidth = 1.0;
     this.ctx.font = '11px Outfit, sans-serif';
     this.ctx.fillStyle = '#94a3b8';
     this.ctx.textAlign = 'right';
@@ -994,8 +997,8 @@ class DataDashboardEngine {
       // Area fill for primary line
       if (sIdx === 0) {
         const areaGrad = this.ctx.createLinearGradient(0, padding.top, 0, padding.top + chartH);
-        areaGrad.addColorStop(0, 'rgba(30, 96, 208, 0.16)');
-        areaGrad.addColorStop(1, 'rgba(30, 96, 208, 0.0)');
+        areaGrad.addColorStop(0, 'rgba(0, 240, 255, 0.22)');
+        areaGrad.addColorStop(1, 'rgba(0, 240, 255, 0.0)');
 
         this.ctx.fillStyle = areaGrad;
         this.ctx.beginPath();
@@ -1028,10 +1031,10 @@ class DataDashboardEngine {
       }
       this.ctx.stroke();
 
-      // Data Point Markers (Only when manageable count)
+      // Data Point Markers
       if (showMarkers) {
         points.forEach((pt) => {
-          this.ctx.fillStyle = '#ffffff';
+          this.ctx.fillStyle = '#0b132b';
           this.ctx.strokeStyle = col.color;
           this.ctx.lineWidth = 3;
           this.ctx.beginPath();
@@ -1040,7 +1043,7 @@ class DataDashboardEngine {
           this.ctx.stroke();
 
           if (count <= 12 && numCols.length <= 2) {
-            this.ctx.fillStyle = '#0f172a';
+            this.ctx.fillStyle = '#ffffff';
             this.ctx.font = 'bold 11px Outfit, sans-serif';
             this.ctx.textAlign = 'center';
             this.ctx.fillText(Math.round(pt.val), pt.x, pt.y - 10);
@@ -1053,7 +1056,7 @@ class DataDashboardEngine {
     for (let i = 0; i < count; i++) {
       if (showLabels || i % labelStride === 0) {
         const x = padding.left + stepX * i;
-        this.ctx.fillStyle = '#475569';
+        this.ctx.fillStyle = '#94a3b8';
         this.ctx.font = '500 11px Outfit, sans-serif';
         this.ctx.textAlign = 'center';
         const shortLabel = this.rows[i].label.length > 10 ? this.rows[i].label.substring(0, 8) + '..' : this.rows[i].label;
@@ -1077,7 +1080,7 @@ class DataDashboardEngine {
       this.ctx.arc(legendStartX + 5, legendY, 5, 0, Math.PI * 2);
       this.ctx.fill();
 
-      this.ctx.fillStyle = '#334155';
+      this.ctx.fillStyle = '#e2e8f0';
       this.ctx.textAlign = 'left';
       const shortName = col.name.length > 16 ? col.name.substring(0, 14) + '..' : col.name;
       this.ctx.fillText(shortName, legendStartX + 15, legendY + 4);
