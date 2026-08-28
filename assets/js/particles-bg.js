@@ -11,17 +11,18 @@
   const ctx = canvas.getContext('2d');
 
   let width, height;
+  const isMobile = (window.innerWidth < 768) || ('ontouchstart' in window);
   const nodes = [];
-  const NODE_COUNT = Math.min(Math.floor(window.innerWidth / 45), 24);
-  const CONNECTION_DIST = 110;
+  const NODE_COUNT = isMobile ? 8 : Math.min(Math.floor(window.innerWidth / 45), 24);
+  const CONNECTION_DIST = isMobile ? 70 : 110;
   const CONNECTION_DIST_SQ = CONNECTION_DIST * CONNECTION_DIST;
   let mouse = { x: null, y: null, radiusSq: 140 * 140 };
 
   const PALETTE = [
-    'rgba(30, 96, 208, 0.4)',
-    'rgba(0, 168, 232, 0.4)',
-    'rgba(245, 158, 11, 0.35)',
-    'rgba(16, 185, 129, 0.3)'
+    'rgba(0, 240, 255, 0.55)',
+    'rgba(59, 130, 246, 0.55)',
+    'rgba(251, 191, 36, 0.45)',
+    'rgba(52, 211, 153, 0.45)'
   ];
 
   function resize() {
@@ -86,29 +87,33 @@
   function render() {
     ctx.clearRect(0, 0, width, height);
 
-    // Fast batch line stroke
-    ctx.lineWidth = 0.75;
     const len = nodes.length;
 
-    for (let i = 0; i < len; i++) {
-      const n1 = nodes[i];
-      for (let j = i + 1; j < len; j++) {
-        const n2 = nodes[j];
-        const dx = n1.x - n2.x;
-        const dy = n1.y - n2.y;
-        const dSq = dx * dx + dy * dy;
+    if (!isMobile) {
+      ctx.lineWidth = 0.75;
+      for (let i = 0; i < len; i++) {
+        const n1 = nodes[i];
+        for (let j = i + 1; j < len; j++) {
+          const n2 = nodes[j];
+          const dx = n1.x - n2.x;
+          const dy = n1.y - n2.y;
+          const dSq = dx * dx + dy * dy;
 
-        if (dSq < CONNECTION_DIST_SQ) {
-          const alpha = (1 - Math.sqrt(dSq) / CONNECTION_DIST) * 0.18;
-          ctx.strokeStyle = `rgba(30, 96, 208, ${alpha})`;
-          ctx.beginPath();
-          ctx.moveTo(n1.x, n1.y);
-          ctx.lineTo(n2.x, n2.y);
-          ctx.stroke();
+          if (dSq < CONNECTION_DIST_SQ) {
+            const alpha = (1 - Math.sqrt(dSq) / CONNECTION_DIST) * 0.18;
+            ctx.strokeStyle = `rgba(30, 96, 208, ${alpha})`;
+            ctx.beginPath();
+            ctx.moveTo(n1.x, n1.y);
+            ctx.lineTo(n2.x, n2.y);
+            ctx.stroke();
+          }
         }
       }
-      n1.update();
-      n1.draw();
+    }
+
+    for (let i = 0; i < len; i++) {
+      nodes[i].update();
+      nodes[i].draw();
     }
 
     requestAnimationFrame(render);
