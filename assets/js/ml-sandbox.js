@@ -68,12 +68,16 @@ class MLSandboxStudio {
     this.trainingPoints = [];
     this.generateSyntheticTrainingData();
 
+    this.isMobile = (window.innerWidth < 768) || ('ontouchstart' in window);
+    this.isVisible = true;
+
     this.init();
   }
 
   init() {
     this.resizeCanvases();
     window.addEventListener('resize', () => {
+      this.isMobile = (window.innerWidth < 768) || ('ontouchstart' in window);
       this.resizeCanvases();
     }, { passive: true });
 
@@ -89,9 +93,24 @@ class MLSandboxStudio {
     // Calculate initial target values
     this.updateTargetPredictions();
 
+    // Visibility Gating for Mobile 60 FPS
+    this.initVisibilityObserver();
+
     // Start 60 FPS Majestic Animation Loop
     this.animate = this.animate.bind(this);
     requestAnimationFrame(this.animate);
+  }
+
+  initVisibilityObserver() {
+    if (!('IntersectionObserver' in window)) return;
+    const target = this.boundaryCanvas ? this.boundaryCanvas.closest('section') : null;
+    if (!target) return;
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        this.isVisible = entry.isIntersecting;
+      });
+    }, { rootMargin: '100px 0px 100px 0px' });
+    observer.observe(target);
   }
 
   initSparkles() {
@@ -108,7 +127,7 @@ class MLSandboxStudio {
   }
 
   resizeCanvases() {
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const dpr = this.isMobile ? 1.0 : Math.min(window.devicePixelRatio || 1, 2);
 
     if (this.boundaryCanvas) {
       const w = this.boundaryCanvas.parentElement.clientWidth || 550;
@@ -577,6 +596,11 @@ print(f"Executing Real-Time Inference with {len(weights)} active parameters...")
 
   // 7. 60 FPS CONTINUOUS ANIMATION LOOP (SLOWER, SMOOTH MAJESTIC EASING)
   animate() {
+    if (this.isMobile && !this.isVisible) {
+      requestAnimationFrame(this.animate);
+      return;
+    }
+
     this.time += 0.02;
 
     const lerpRate = 0.035;
@@ -722,7 +746,7 @@ print(f"Executing Real-Time Inference with {len(weights)} active parameters...")
     const plotW = w - pad * 2;
     const plotH = h - pad * 2;
 
-    const res = 14;
+    const res = this.isMobile ? 22 : 14;
     const cols = Math.ceil(plotW / res);
     const rows = Math.ceil(plotH / res);
 
