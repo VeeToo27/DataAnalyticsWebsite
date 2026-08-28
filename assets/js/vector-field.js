@@ -9,7 +9,9 @@ class VectorFieldStudio {
     this.container = document.getElementById('vector-field-canvas-container');
     if (!this.container) return;
 
-    this.numParticles = 6000;
+    // Mobile Optimization (1,200 particles on mobile for locked 60FPS)
+    this.isMobile = (window.innerWidth < 768) || ('ontouchstart' in window);
+    this.numParticles = this.isMobile ? 1200 : 6000;
     this.currentFormation = 1; // 1: Hypersphere, 2: Helix, 3: Torus, 4: Lattice, 5: Wave, 0: Supernova
     this.targetFormation = 1;
     this.morphProgress = 1.0;
@@ -42,6 +44,7 @@ class VectorFieldStudio {
     this.gestureBadge = document.getElementById('vector-gesture-badge');
     this.webcamToggleBtn = document.getElementById('vector-webcam-toggle-btn');
     this.pipContainer = document.getElementById('vector-webcam-pip');
+    this.isVisible = true;
 
     this.init();
   }
@@ -52,60 +55,76 @@ class VectorFieldStudio {
     this.bindMouseControls();
     this.bindToolbarControls();
     this.initMediaPipeFallback();
+    this.initVisibilityObserver();
     this.animate();
+  }
+
+  initVisibilityObserver() {
+    if (!('IntersectionObserver' in window)) return;
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        this.isVisible = entry.isIntersecting;
+      });
+    }, { rootMargin: '100px 0px 100px 0px' });
+    observer.observe(this.container);
   }
 
   initThreeJS() {
     const width = this.container.clientWidth || 1000;
-    const height = Math.max(560, this.container.clientHeight || 560);
+    const height = Math.max(380, this.container.clientHeight || (this.isMobile ? 380 : 560));
 
-    // 1. Scene
+    // 1. Dark Theme Three.js Scene (#040914)
     this.scene = new THREE.Scene();
-    this.scene.background = new THREE.Color(0xfafbfc);
-    this.scene.fog = new THREE.FogExp2(0xfafbfc, 0.0035);
+    this.scene.background = new THREE.Color(0x040914);
+    this.scene.fog = new THREE.FogExp2(0x040914, 0.003);
 
     // 2. Camera
     this.camera = new THREE.PerspectiveCamera(50, width / height, 1, 3000);
-    this.camera.position.set(0, 40, 320);
+    this.camera.position.set(0, 40, this.isMobile ? 380 : 320);
 
-    // 3. Renderer with High DPR & Antialias
-    this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false, powerPreference: 'high-performance' });
+    // 3. Renderer
+    this.renderer = new THREE.WebGLRenderer({ antialias: !this.isMobile, alpha: false, powerPreference: 'high-performance' });
     this.renderer.setSize(width, height);
-    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    this.renderer.setPixelRatio(this.isMobile ? 1.0 : Math.min(window.devicePixelRatio || 1, 2));
     this.renderer.shadowMap.enabled = false;
     this.container.appendChild(this.renderer.domElement);
 
-    // 4. Lighting for clean 3D shading
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.85);
+    // 4. Lighting for ultra-visible white-gray 3D particles
+    const ambientLight = new THREE.AmbientLight(0xffffff, 1.5);
     this.scene.add(ambientLight);
 
-    const dirLight1 = new THREE.DirectionalLight(0x1e60d0, 1.2);
+    const dirLight1 = new THREE.DirectionalLight(0xffffff, 1.8);
     dirLight1.position.set(150, 200, 150);
     this.scene.add(dirLight1);
 
-    const dirLight2 = new THREE.DirectionalLight(0x00a8e8, 0.8);
+    const dirLight2 = new THREE.DirectionalLight(0xf1f5f9, 1.4);
     dirLight2.position.set(-150, -100, -150);
     this.scene.add(dirLight2);
 
-    // 5. InstancedMesh with 6,000 Sphere Particles
-    const geom = new THREE.SphereGeometry(1.2, 8, 8);
+    const pointLight = new THREE.PointLight(0xffffff, 1.2, 700);
+    pointLight.position.set(0, 50, 220);
+    this.scene.add(pointLight);
+
+    // 5. InstancedMesh with 6,000 Sphere Particles (Bright White-Gray Ultra-Visible)
+    const geom = new THREE.SphereGeometry(this.isMobile ? 1.45 : 1.65, 8, 8);
     const mat = new THREE.MeshStandardMaterial({
-      roughness: 0.25,
-      metalness: 0.4,
+      roughness: 0.15,
+      metalness: 0.45,
+      emissive: new THREE.Color(0x4a5568), // Luminous ambient emission so white-gray particles pop intensely
       vertexColors: true
     });
 
     this.instancedMesh = new THREE.InstancedMesh(geom, mat, this.numParticles);
     this.instancedMesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
 
-    // Palette Colors for Data Clusters
+    // Ultra-Bright White-Gray & Platinum Palette
     const palette = [
-      new THREE.Color(0x1e60d0), // Royal Blue
-      new THREE.Color(0x00a8e8), // Cyan
-      new THREE.Color(0x10b981), // Emerald
-      new THREE.Color(0xf59e0b), // Amber
-      new THREE.Color(0x8b5cf6), // Purple
-      new THREE.Color(0xf97316)  // Coral
+      new THREE.Color(0xffffff), // Pure Luminous White
+      new THREE.Color(0xf8fafc), // Ultra-Bright Platinum
+      new THREE.Color(0xf1f5f9), // Pearl White-Gray
+      new THREE.Color(0xe2e8f0), // Bright Silver White-Gray
+      new THREE.Color(0xdbeafe), // Icy Soft White-Gray
+      new THREE.Color(0xd1d5db)  // Clean Light Titanium Gray
     ];
 
     for (let i = 0; i < this.numParticles; i++) {
@@ -286,7 +305,28 @@ class VectorFieldStudio {
       this.cameraRotation.x = Math.max(-1.2, Math.min(1.2, this.cameraRotation.x));
     });
 
-    window.addEventListener('mouseup', () => {
+    // Touch Drag Controls for Mobile
+    el.addEventListener('touchstart', (e) => {
+      if (e.touches.length === 1) {
+        this.mouse.isDragging = true;
+        this.mouse.prevX = e.touches[0].clientX;
+        this.mouse.prevY = e.touches[0].clientY;
+      }
+    }, { passive: true });
+
+    window.addEventListener('touchmove', (e) => {
+      if (!this.mouse.isDragging || e.touches.length !== 1) return;
+      const dx = e.touches[0].clientX - this.mouse.prevX;
+      const dy = e.touches[0].clientY - this.mouse.prevY;
+      this.mouse.prevX = e.touches[0].clientX;
+      this.mouse.prevY = e.touches[0].clientY;
+
+      this.cameraRotation.y += dx * 0.008;
+      this.cameraRotation.x += dy * 0.008;
+      this.cameraRotation.x = Math.max(-1.2, Math.min(1.2, this.cameraRotation.x));
+    }, { passive: true });
+
+    window.addEventListener('touchend', () => {
       this.mouse.isDragging = false;
     });
 
@@ -460,7 +500,8 @@ class VectorFieldStudio {
   animate() {
     requestAnimationFrame(() => this.animate());
 
-    // 1. Smooth Spring Morphing of 6,000 Particles
+    // On mobile, skip frame calculations if off-screen to guarantee 60fps across the site
+    if (this.isMobile && !this.isVisible) return;
     const spring = 0.055;
     const damping = 0.86;
     const count = this.numParticles;
