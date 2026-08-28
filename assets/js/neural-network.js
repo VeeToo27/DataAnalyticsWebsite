@@ -48,12 +48,16 @@ class NeuralNetworkStudio {
       ['ŷ₁: Class A (94%)', 'ŷ₂: Class B (4%)', 'ŷ₃: Class C (2%)']
     ];
 
+    this.isMobile = (window.innerWidth < 768) || ('ontouchstart' in window);
+    this.isVisible = true;
+
     this.init();
   }
 
   init() {
     this.resizeCanvas();
     window.addEventListener('resize', () => {
+      this.isMobile = (window.innerWidth < 768) || ('ontouchstart' in window);
       this.resizeCanvas();
       this.buildNetwork();
     }, { passive: true });
@@ -61,12 +65,23 @@ class NeuralNetworkStudio {
     this.buildNetwork();
     this.bindMouseEvents();
     this.bindControlEvents();
+    this.initVisibilityObserver();
     this.startSimulationLoop();
+  }
+
+  initVisibilityObserver() {
+    if (!('IntersectionObserver' in window)) return;
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        this.isVisible = entry.isIntersecting;
+      });
+    }, { rootMargin: '80px 0px 80px 0px' });
+    observer.observe(this.canvas);
   }
 
   resizeCanvas() {
     const container = this.canvas.parentElement;
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const dpr = this.isMobile ? 1.0 : Math.min(window.devicePixelRatio || 1, 2);
     this.width = container.clientWidth || 1000;
     this.height = Math.max(560, container.clientHeight || 560);
 
@@ -416,6 +431,10 @@ class NeuralNetworkStudio {
 
   startSimulationLoop() {
     const loop = (now) => {
+      if (this.isMobile && !this.isVisible) {
+        requestAnimationFrame(loop);
+        return;
+      }
       this.updatePhysics();
       this.updatePulses();
       this.updateParticles();
@@ -521,56 +540,43 @@ class NeuralNetworkStudio {
     const availW = this.width - padX * 2;
     const layerSpacing = numLayers > 1 ? availW / (numLayers - 1) : availW;
 
-    this.ctx.font = 'bold 11px Outfit, monospace';
+    this.ctx.font = 'bold 11px Outfit, sans-serif';
     this.ctx.textAlign = 'center';
+    this.layerLabels.forEach((title, idx) => {
+      if (idx < numLayers) {
+        const x = padX + layerSpacing * idx;
+        this.ctx.fillStyle = '#64748b';
+        this.ctx.fillText(title, x, 32);
 
-    for (let l = 0; l < numLayers; l++) {
-      const lx = padX + layerSpacing * l;
-      const label = this.layerLabels[l] || `Layer ${l + 1}`;
+        this.ctx.strokeStyle = 'rgba(255, 255, 255, 0.03)';
+        this.ctx.lineWidth = 1;
+        this.ctx.beginPath();
+        this.ctx.moveTo(x, 44);
+        this.ctx.lineTo(x, this.height - 30);
+        this.ctx.stroke();
+      }
+    });
 
-      // Column Glow Guide
-      this.ctx.strokeStyle = 'rgba(255, 255, 255, 0.03)';
-      this.ctx.beginPath();
-      this.ctx.moveTo(lx, 40);
-      this.ctx.lineTo(lx, h - 40);
-      this.ctx.stroke();
-
-      // Layer Title
-      this.ctx.fillStyle = l === 0 ? '#00a8e8' : (l === numLayers - 1 ? '#10b981' : '#94a3b8');
-      this.ctx.fillText(label.toUpperCase(), lx, 32);
-    }
-
-    // 3. Draw Synapses (Axons & Dendrites)
+    // 3. Draw Synaptic Connections (Weighted Edges with Flow Direction)
     this.synapses.forEach(syn => {
       const isHovered = (syn === this.hoveredSynapse);
-      const absWeight = Math.abs(syn.weight);
-      const isPositive = syn.weight >= 0;
+      const intensity = Math.abs(syn.weight);
 
-      this.ctx.save();
-      if (isHovered) {
-        this.ctx.strokeStyle = '#38bdf8';
-        this.ctx.lineWidth = 3.5;
-        this.ctx.shadowColor = '#00a8e8';
-        this.ctx.shadowBlur = 12;
-      } else {
-        this.ctx.strokeStyle = isPositive
-          ? `rgba(0, 168, 232, ${Math.min(0.7, 0.15 + absWeight * 0.3)})`
-          : `rgba(244, 63, 94, ${Math.min(0.6, 0.15 + absWeight * 0.25)})`;
-        this.ctx.lineWidth = Math.max(1, absWeight * 2);
-      }
-
+      this.ctx.strokeStyle = isHovered ? '#38bdf8' : (syn.isForward ? 'rgba(0, 168, 232, 0.22)' : 'rgba(148, 163, 184, 0.1)');
+      this.ctx.lineWidth = isHovered ? 3.5 : Math.max(1, intensity * 2.2);
       this.ctx.beginPath();
       this.ctx.moveTo(syn.from.x, syn.from.y);
-      this.ctx.lineTo(syn.to.x, syn.to.y);
+
+      const cx = (syn.from.x + syn.to.x) * 0.5;
+      this.ctx.bezierCurveTo(cx, syn.from.y, cx, syn.to.y, syn.to.x, syn.to.y);
       this.ctx.stroke();
-      this.ctx.restore();
 
-      // Ambient Flowing Synaptic Packets
-      const ambientT = ((now * 0.0006 + (syn.from.index * 0.2 + syn.to.index * 0.1)) % 1.0);
-      const ax = syn.from.x + (syn.to.x - syn.from.x) * ambientT;
-      const ay = syn.from.y + (syn.to.y - syn.from.y) * ambientT;
+      // Mini Midpoint Synaptic Weight Node
+      const midT = 0.5;
+      const ax = (1 - midT) * (1 - midT) * syn.from.x + 2 * (1 - midT) * midT * cx + midT * midT * syn.to.x;
+      const ay = (1 - midT) * (1 - midT) * syn.from.y + 2 * (1 - midT) * midT * ((syn.from.y + syn.to.y) * 0.5) + midT * midT * syn.to.y;
 
-      this.ctx.fillStyle = isPositive ? 'rgba(0, 168, 232, 0.5)' : 'rgba(245, 158, 11, 0.5)';
+      this.ctx.fillStyle = isHovered ? '#38bdf8' : 'rgba(0, 168, 232, 0.4)';
       this.ctx.beginPath();
       this.ctx.arc(ax, ay, 2, 0, Math.PI * 2);
       this.ctx.fill();
@@ -585,7 +591,7 @@ class NeuralNetworkStudio {
       this.ctx.save();
       this.ctx.fillStyle = '#ffffff';
       this.ctx.shadowColor = p.color || '#00a8e8';
-      this.ctx.shadowBlur = 16;
+      this.ctx.shadowBlur = this.isMobile ? 0 : 16;
       this.ctx.beginPath();
       this.ctx.arc(px, py, 4.5, 0, Math.PI * 2);
       this.ctx.fill();
@@ -602,7 +608,7 @@ class NeuralNetworkStudio {
       this.ctx.save();
       if (firing > 0 || isHovered || isDragged) {
         this.ctx.shadowColor = node.color;
-        this.ctx.shadowBlur = 24;
+        this.ctx.shadowBlur = this.isMobile ? 0 : 24;
         this.ctx.fillStyle = node.color;
         this.ctx.globalAlpha = 0.25 + firing * 0.5;
         this.ctx.beginPath();
